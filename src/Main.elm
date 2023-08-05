@@ -3,10 +3,11 @@ module Main exposing (main)
 import Browser
 import Browser.Events exposing (onKeyDown, onKeyUp)
 import Css exposing (..)
-import Dict exposing (Dict)
+import Dict
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (css)
 import Json.Decode as Decode
+import Questions exposing (Question, maxQuestions, questions)
 import Random
 
 
@@ -26,14 +27,6 @@ main =
 
 
 -- MODEL
-
-
-type alias Question =
-    { id : Int
-    , target : String
-    , answer : String
-    , englishKey : String
-    }
 
 
 type alias Model =
@@ -290,63 +283,3 @@ mapKey char =
 
         _ ->
             char
-
-
-maxQuestions : Int
-maxQuestions =
-    7
-
-
-questions : Dict Int Question
-questions =
-    Dict.fromList
-        [ ( 1
-          , { id = 1
-            , target = "倉"
-            , answer = "人戈日口"
-            , englishKey = "OIAR"
-            }
-          )
-        , ( 2
-          , { id = 2
-            , target = "頡"
-            , answer = "土口一月金"
-            , englishKey = "GRMBC"
-            }
-          )
-        , ( 3
-          , { id = 3
-            , target = "練"
-            , answer = "女火木田火"
-            , englishKey = "VFDWF"
-            }
-          )
-        , ( 4
-          , { id = 4
-            , target = "習"
-            , answer = "尸一竹日"
-            , englishKey = "SMHA"
-            }
-          )
-        , ( 5
-          , { id = 5
-            , target = "輸"
-            , answer = "十十人一弓"
-            , englishKey = "JJOMN"
-            }
-          )
-        , ( 6
-          , { id = 6
-            , target = "入"
-            , answer = "人竹"
-            , englishKey = "OH"
-            }
-          )
-        , ( 7
-          , { id = 7
-            , target = "法"
-            , answer = "水土戈"
-            , englishKey = "EGI"
-            }
-          )
-        ]
