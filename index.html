@@ -17548,23 +17548,26 @@ var $rtfeldman$elm_css$Css$alignItems = function (fn) {
 		fn($rtfeldman$elm_css$Css$Internal$lengthForOverloadedProperty));
 };
 var $rtfeldman$elm_css$Css$center = $rtfeldman$elm_css$Css$prop1('center');
-var $rtfeldman$elm_css$Css$margin = $rtfeldman$elm_css$Css$prop1('margin');
-var $author$project$Main$placeHolder = function (num) {
-	return A2(
-		$rtfeldman$elm_css$Html$Styled$div,
-		_List_fromArray(
-			[
-				$rtfeldman$elm_css$Html$Styled$Attributes$css(
-				_List_fromArray(
-					[
-						$rtfeldman$elm_css$Css$margin(
-						$rtfeldman$elm_css$Css$rem(num))
-					]))
-			]),
-		_List_Nil);
-};
 var $rtfeldman$elm_css$Html$Styled$button = $rtfeldman$elm_css$Html$Styled$node('button');
+var $rtfeldman$elm_css$Css$batch = $rtfeldman$elm_css$Css$Preprocess$ApplyStyles;
 var $rtfeldman$elm_css$Css$height = $rtfeldman$elm_css$Css$prop1('height');
+var $rtfeldman$elm_css$Css$manipulation = {touchAction: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'manipulation'};
+var $rtfeldman$elm_css$Css$margin = $rtfeldman$elm_css$Css$prop1('margin');
+var $rtfeldman$elm_css$Css$touchAction = $rtfeldman$elm_css$Css$prop1('touch-action');
+var $rtfeldman$elm_css$Css$width = $rtfeldman$elm_css$Css$prop1('width');
+var $author$project$Main$buttonStyle = $rtfeldman$elm_css$Css$batch(
+	_List_fromArray(
+		[
+			$rtfeldman$elm_css$Css$margin(
+			$rtfeldman$elm_css$Css$px(4)),
+			$rtfeldman$elm_css$Css$height(
+			$rtfeldman$elm_css$Css$rem(5)),
+			$rtfeldman$elm_css$Css$width(
+			$rtfeldman$elm_css$Css$rem(5)),
+			$rtfeldman$elm_css$Css$fontSize(
+			$rtfeldman$elm_css$Css$px(20)),
+			$rtfeldman$elm_css$Css$touchAction($rtfeldman$elm_css$Css$manipulation)
+		]));
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 'Normal', a: a};
 };
@@ -17598,20 +17601,12 @@ var $author$project$Main$virtualBackspace = A2(
 			$author$project$Main$Control('Backspace')),
 			$rtfeldman$elm_css$Html$Styled$Attributes$css(
 			_List_fromArray(
-				[
-					$rtfeldman$elm_css$Css$margin(
-					$rtfeldman$elm_css$Css$px(4)),
-					$rtfeldman$elm_css$Css$height(
-					$rtfeldman$elm_css$Css$rem(4)),
-					$rtfeldman$elm_css$Css$fontSize(
-					$rtfeldman$elm_css$Css$px(20))
-				]))
+				[$author$project$Main$buttonStyle]))
 		]),
 	_List_fromArray(
 		[
-			$rtfeldman$elm_css$Html$Styled$text('Backspace')
+			$rtfeldman$elm_css$Html$Styled$text('←')
 		]));
-var $rtfeldman$elm_css$Css$width = $rtfeldman$elm_css$Css$prop1('width');
 var $author$project$Main$virtualKeyboardBtn = function (_char) {
 	return A2(
 		$rtfeldman$elm_css$Html$Styled$button,
@@ -17621,16 +17616,7 @@ var $author$project$Main$virtualKeyboardBtn = function (_char) {
 				$author$project$Main$PressedLetter(_char)),
 				$rtfeldman$elm_css$Html$Styled$Attributes$css(
 				_List_fromArray(
-					[
-						$rtfeldman$elm_css$Css$margin(
-						$rtfeldman$elm_css$Css$px(4)),
-						$rtfeldman$elm_css$Css$height(
-						$rtfeldman$elm_css$Css$rem(4)),
-						$rtfeldman$elm_css$Css$width(
-						$rtfeldman$elm_css$Css$rem(4)),
-						$rtfeldman$elm_css$Css$fontSize(
-						$rtfeldman$elm_css$Css$px(20))
-					]))
+					[$author$project$Main$buttonStyle]))
 			]),
 		_List_fromArray(
 			[
@@ -17656,16 +17642,7 @@ var $author$project$Main$virtualQuestionMark = A2(
 					_Utils_chr('?')))),
 			$rtfeldman$elm_css$Html$Styled$Attributes$css(
 			_List_fromArray(
-				[
-					$rtfeldman$elm_css$Css$margin(
-					$rtfeldman$elm_css$Css$px(4)),
-					$rtfeldman$elm_css$Css$height(
-					$rtfeldman$elm_css$Css$rem(4)),
-					$rtfeldman$elm_css$Css$width(
-					$rtfeldman$elm_css$Css$rem(4)),
-					$rtfeldman$elm_css$Css$fontSize(
-					$rtfeldman$elm_css$Css$px(20))
-				]))
+				[$author$project$Main$buttonStyle]))
 		]),
 	_List_fromArray(
 		[
@@ -17681,14 +17658,9 @@ var $author$project$Main$virtualSpace = A2(
 			$rtfeldman$elm_css$Html$Styled$Attributes$css(
 			_List_fromArray(
 				[
-					$rtfeldman$elm_css$Css$margin(
-					$rtfeldman$elm_css$Css$px(4)),
-					$rtfeldman$elm_css$Css$height(
-					$rtfeldman$elm_css$Css$rem(4)),
+					$author$project$Main$buttonStyle,
 					$rtfeldman$elm_css$Css$width(
-					$rtfeldman$elm_css$Css$rem(20)),
-					$rtfeldman$elm_css$Css$fontSize(
-					$rtfeldman$elm_css$Css$px(20))
+					$rtfeldman$elm_css$Css$rem(20))
 				]))
 		]),
 	_List_fromArray(
@@ -17715,7 +17687,6 @@ var $author$project$Main$virtualKeyboard = function (model) {
 				_List_Nil,
 				_List_fromArray(
 					[
-						$author$project$Main$placeHolder(5),
 						$author$project$Main$virtualKeyboardBtn(
 						_Utils_chr('手')),
 						$author$project$Main$virtualKeyboardBtn(
