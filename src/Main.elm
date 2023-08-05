@@ -3,9 +3,11 @@ module Main exposing (main)
 import Browser
 import Browser.Events exposing (onKeyDown, onKeyUp)
 import Css exposing (..)
+import Dict exposing (Dict)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (css)
 import Json.Decode as Decode
+import Random
 
 
 
@@ -26,19 +28,34 @@ main =
 -- MODEL
 
 
-type alias Model =
-    { content : String
+type alias Question =
+    { id : Int
     , target : String
     , answer : String
     , englishKey : String
+    }
+
+
+type alias Model =
+    { content : String
     , showAnswer : Bool
+    , question : Question
+    }
+
+
+defaultQuestion : Question
+defaultQuestion =
+    { id = 1
+    , target = "倉"
+    , answer = "人戈日口"
+    , englishKey = "OIAR"
     }
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( Model "" "倉" "人戈日口" "OIAR" False
-    , Cmd.none
+    ( Model "" False defaultQuestion
+    , generateNumber
     )
 
 
@@ -50,7 +67,7 @@ view : Model -> Html Msg
 view model =
     div [ css [ width (vw 100.0), height (vh 100.0), display inlineFlex, flexDirection column ] ]
         [ div [ css [ height (vh 50.0), display inlineFlex ] ]
-            [ div [ css [ margin4 auto auto (px 8) auto ] ] [ text model.target ] ]
+            [ div [ css [ margin4 auto auto (px 8) auto ] ] [ text model.question.target ] ]
         , div [ css [ height (vh 50.0), display inlineFlex ] ]
             [ div [ css [ margin4 (px 8) auto auto auto ] ] [ outputBox model ] ]
         ]
@@ -59,7 +76,7 @@ view model =
 outputBox : Model -> Html Msg
 outputBox model =
     if model.showAnswer then
-        div [] [ text <| model.answer ++ " (" ++ model.englishKey ++ ")" ]
+        div [] [ text <| model.question.answer ++ " (" ++ model.question.englishKey ++ ")" ]
 
     else
         div [] [ text model.content ]
@@ -73,6 +90,7 @@ type Msg
     = PressedLetter Char
     | Control String
     | LiftedLetter Char
+    | NewQuestion Int
     | Ignore
 
 
@@ -100,14 +118,19 @@ update msg model =
         LiftedLetter _ ->
             ( model, Cmd.none )
 
+        NewQuestion num ->
+            getQuestion model num
+
         Ignore ->
             ( model, Cmd.none )
 
 
 checkAnswer : Model -> ( Model, Cmd Msg )
 checkAnswer model =
-    if model.content == model.answer then
-        ( { model | content = "" }, Cmd.none )
+    if model.content == model.question.answer then
+        ( { model | content = "" }
+        , generateNumber
+        )
 
     else
         ( model, Cmd.none )
@@ -121,6 +144,25 @@ showAnswer model =
 hideAnswer : Model -> ( Model, Cmd Msg )
 hideAnswer model =
     ( { model | showAnswer = False }, Cmd.none )
+
+
+getQuestion : Model -> Int -> ( Model, Cmd Msg )
+getQuestion model num =
+    if num == model.question.id then
+        ( model, generateNumber )
+
+    else
+        case Dict.get num questions of
+            Just question ->
+                ( { model | question = question }, Cmd.none )
+
+            Nothing ->
+                ( model, Cmd.none )
+
+
+generateNumber : Cmd Msg
+generateNumber =
+    Random.generate NewQuestion (Random.int 1 maxQuestions)
 
 
 
@@ -248,3 +290,63 @@ mapKey char =
 
         _ ->
             char
+
+
+maxQuestions : Int
+maxQuestions =
+    7
+
+
+questions : Dict Int Question
+questions =
+    Dict.fromList
+        [ ( 1
+          , { id = 1
+            , target = "倉"
+            , answer = "人戈日口"
+            , englishKey = "OIAR"
+            }
+          )
+        , ( 2
+          , { id = 2
+            , target = "頡"
+            , answer = "土口一月金"
+            , englishKey = "GRMBC"
+            }
+          )
+        , ( 3
+          , { id = 3
+            , target = "練"
+            , answer = "女火木田火"
+            , englishKey = "VFDWF"
+            }
+          )
+        , ( 4
+          , { id = 4
+            , target = "習"
+            , answer = "尸一竹日"
+            , englishKey = "SMHA"
+            }
+          )
+        , ( 5
+          , { id = 5
+            , target = "輸"
+            , answer = "十十人一弓"
+            , englishKey = "JJOMN"
+            }
+          )
+        , ( 6
+          , { id = 6
+            , target = "入"
+            , answer = "人竹"
+            , englishKey = "OH"
+            }
+          )
+        , ( 7
+          , { id = 7
+            , target = "法"
+            , answer = "水土戈"
+            , englishKey = "EGI"
+            }
+          )
+        ]
