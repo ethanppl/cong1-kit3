@@ -3,6 +3,7 @@ module Main exposing (main)
 import Browser
 import Browser.Events exposing (onKeyDown, onKeyUp)
 import Css exposing (..)
+import Css.Media as Media exposing (only, screen, withMedia)
 import Dict
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (css)
@@ -95,8 +96,7 @@ virtualKeyboard model =
     if model.showVirtualKeyboard then
         div [ css [ display inlineFlex, flexDirection column, alignItems center ] ]
             [ div []
-                [ placeHolder 5
-                , virtualKeyboardBtn '手'
+                [ virtualKeyboardBtn '手'
                 , virtualKeyboardBtn '田'
                 , virtualKeyboardBtn '水'
                 , virtualKeyboardBtn '口'
@@ -136,34 +136,40 @@ virtualKeyboard model =
         div [] []
 
 
+buttonStyle : Style
+buttonStyle =
+    Css.batch
+        [ margin (px 4)
+        , height (rem 5)
+        , width (rem 5)
+        , fontSize (px 20)
+        , touchAction manipulation
+        ]
+
+
 virtualKeyboardBtn : Char -> Html Msg
 virtualKeyboardBtn char =
     button
         [ onClick (PressedLetter char)
-        , css [ margin (px 4), height (rem 4), width (rem 4), fontSize (px 20) ]
+        , css [ buttonStyle ]
         ]
         [ text <| String.fromChar char ]
-
-
-placeHolder : Float -> Html Msg
-placeHolder num =
-    div [ css [ margin (rem num) ] ] []
 
 
 virtualBackspace : Html Msg
 virtualBackspace =
     button
         [ onClick (Control "Backspace")
-        , css [ margin (px 4), height (rem 4), fontSize (px 20) ]
+        , css [ buttonStyle ]
         ]
-        [ text "Backspace" ]
+        [ text "←" ]
 
 
 virtualSpace : Html Msg
 virtualSpace =
     button
         [ onClick (PressedLetter ' ')
-        , css [ margin (px 4), height (rem 4), width (rem 20), fontSize (px 20) ]
+        , css [ buttonStyle, width (rem 20) ]
         ]
         [ text "Space" ]
 
@@ -173,7 +179,7 @@ virtualQuestionMark =
     button
         [ on "pointerdown" <| Decode.succeed <| PressedLetter '?'
         , on "pointerup" <| Decode.succeed <| LiftedLetter '?'
-        , css [ margin (px 4), height (rem 4), width (rem 4), fontSize (px 20) ]
+        , css [ buttonStyle ]
         ]
         [ text "？" ]
 
