@@ -6,6 +6,7 @@ import Css exposing (..)
 import Dict
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (css)
+import Html.Styled.Events exposing (on, onClick)
 import Json.Decode as Decode
 import Questions exposing (Question, maxQuestions, questions)
 import Random
@@ -33,6 +34,7 @@ type alias Model =
     { content : String
     , showAnswer : Bool
     , question : Question
+    , showVirtualKeyboard : Bool
     }
 
 
@@ -47,7 +49,7 @@ defaultQuestion =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( Model "" False defaultQuestion
+    ( Model "" False defaultQuestion True
     , generateNumber
     )
 
@@ -58,15 +60,23 @@ init _ =
 
 view : Model -> Html Msg
 view model =
-    div [ css [ width (vw 100.0), height (vh 100.0), display inlineFlex, flexDirection column ] ]
-        [ div [ css [ height (vh 40.0), display inlineFlex ] ]
+    div [ css [ width (vw 100.0), minHeight (vh 100.0), display inlineFlex, flexDirection column ] ]
+        [ div [ css [ minHeight (vh 20.0), display inlineFlex ] ]
             [ div [ css [ margin4 auto auto (px 8) auto, fontSize (px 64) ] ] [ text model.question.target ] ]
-        , div [ css [ height (vh 40.0), display inlineFlex ] ]
-            [ div [ css [ margin4 (px 8) auto auto auto, fontSize (px 24) ] ] [ outputBox model ] ]
-        , div [ css [ height (vh 20.0), display inlineFlex, flexDirection column, fontSize (px 16), color (rgb 196 196 196) ] ]
-            [ div [ css [ margin4 (px 2) auto (px 2) auto ] ] [ text "在鍵盤上輸入與答案相應的英文字母。Input the corresponding English letters on your keyboard." ]
-            , div [ css [ margin4 (px 2) auto (px 2) auto ] ] [ text "按空白鍵檢查答案。Press space to check your answer." ]
-            , div [ css [ margin4 (px 2) auto (px 2) auto ] ] [ text "按問號鍵顯示答案。Press ? to show the answer." ]
+        , div [ css [ minHeight (vh 10.0), display inlineFlex ] ]
+            [ div [ css [ margin4 auto auto (px 8) auto, fontSize (px 24) ] ] [ outputBox model ] ]
+        , div [ css [ minHeight (vh 60.0), display inlineFlex ] ]
+            [ div [ css [ margin4 auto auto (rem 4) auto ] ] [ virtualKeyboard model ] ]
+        , div [ css [ minHeight (vh 10.0), display inlineFlex, flexDirection column, fontSize (px 16), color (rgb 196 196 196) ] ]
+            [ div
+                [ css [ margin4 (px 2) auto (px 2) auto ] ]
+                [ text "在鍵盤上輸入與答案相應的英文字母。Input the corresponding English letters on your keyboard." ]
+            , div
+                [ css [ margin4 (px 2) auto (px 2) auto ] ]
+                [ text "按空白鍵檢查答案。Press space to check your answer." ]
+            , div
+                [ css [ margin4 (px 2) auto (px 2) auto ] ]
+                [ text "按問號鍵顯示答案。Press ? to show the answer." ]
             ]
         ]
 
@@ -78,6 +88,94 @@ outputBox model =
 
     else
         div [] [ text model.content ]
+
+
+virtualKeyboard : Model -> Html Msg
+virtualKeyboard model =
+    if model.showVirtualKeyboard then
+        div [ css [ display inlineFlex, flexDirection column, alignItems center ] ]
+            [ div []
+                [ placeHolder 5
+                , virtualKeyboardBtn '手'
+                , virtualKeyboardBtn '田'
+                , virtualKeyboardBtn '水'
+                , virtualKeyboardBtn '口'
+                , virtualKeyboardBtn '廿'
+                , virtualKeyboardBtn '卜'
+                , virtualKeyboardBtn '山'
+                , virtualKeyboardBtn '戈'
+                , virtualKeyboardBtn '人'
+                , virtualKeyboardBtn '心'
+                , virtualBackspace
+                ]
+            , div []
+                [ virtualKeyboardBtn '日'
+                , virtualKeyboardBtn '尸'
+                , virtualKeyboardBtn '木'
+                , virtualKeyboardBtn '火'
+                , virtualKeyboardBtn '土'
+                , virtualKeyboardBtn '竹'
+                , virtualKeyboardBtn '十'
+                , virtualKeyboardBtn '大'
+                , virtualKeyboardBtn '中'
+                ]
+            , div []
+                [ virtualKeyboardBtn '重'
+                , virtualKeyboardBtn '難'
+                , virtualKeyboardBtn '金'
+                , virtualKeyboardBtn '女'
+                , virtualKeyboardBtn '月'
+                , virtualKeyboardBtn '弓'
+                , virtualKeyboardBtn '一'
+                , virtualQuestionMark
+                ]
+            , div [] [ virtualSpace ]
+            ]
+
+    else
+        div [] []
+
+
+virtualKeyboardBtn : Char -> Html Msg
+virtualKeyboardBtn char =
+    button
+        [ onClick (PressedLetter char)
+        , css [ margin (px 4), height (rem 4), width (rem 4), fontSize (px 20) ]
+        ]
+        [ text <| String.fromChar char ]
+
+
+placeHolder : Float -> Html Msg
+placeHolder num =
+    div [ css [ margin (rem num) ] ] []
+
+
+virtualBackspace : Html Msg
+virtualBackspace =
+    button
+        [ onClick (Control "Backspace")
+        , css [ margin (px 4), height (rem 4), fontSize (px 20) ]
+        ]
+        [ text "Backspace" ]
+
+
+virtualSpace : Html Msg
+virtualSpace =
+    button
+        [ onClick (PressedLetter ' ')
+        , css [ margin (px 4), height (rem 4), width (rem 20), fontSize (px 20) ]
+        ]
+        [ text "Space" ]
+
+
+virtualQuestionMark : Html Msg
+virtualQuestionMark =
+    button
+        [ on "pointerdown" <| Decode.succeed <| PressedLetter '?'
+        , on "pointerup" <| Decode.succeed <| LiftedLetter '?'
+        , css [ margin (px 4), height (rem 4), width (rem 4), fontSize (px 20) ]
+        ]
+        [ text "？" ]
 
 
 
@@ -100,6 +198,9 @@ update msg model =
 
         PressedLetter '?' ->
             showAnswer model
+
+        PressedLetter '`' ->
+            toggleKeyboard model
 
         PressedLetter char ->
             ( { model | content = String.append model.content <| String.fromChar char }, Cmd.none )
@@ -142,6 +243,11 @@ showAnswer model =
 hideAnswer : Model -> ( Model, Cmd Msg )
 hideAnswer model =
     ( { model | showAnswer = False }, Cmd.none )
+
+
+toggleKeyboard : Model -> ( Model, Cmd Msg )
+toggleKeyboard model =
+    ( { model | showVirtualKeyboard = not model.showVirtualKeyboard }, Cmd.none )
 
 
 getQuestion : Model -> Int -> ( Model, Cmd Msg )
