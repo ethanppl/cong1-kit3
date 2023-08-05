@@ -155,7 +155,7 @@ getQuestion model num =
 
 generateNumber : Cmd Msg
 generateNumber =
-    Random.generate NewQuestion (Random.int 1 maxQuestions)
+    Random.generate NewQuestion (Random.int 0 maxQuestions)
 
 
 
