@@ -5261,9 +5261,9 @@ var $elm$core$Task$perform = F2(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
 var $elm$browser$Browser$element = _Browser_element;
-var $author$project$Main$Model = F3(
-	function (content, showAnswer, question) {
-		return {content: content, question: question, showAnswer: showAnswer};
+var $author$project$Main$Model = F4(
+	function (content, showAnswer, question, showVirtualKeyboard) {
+		return {content: content, question: question, showAnswer: showAnswer, showVirtualKeyboard: showVirtualKeyboard};
 	});
 var $author$project$Main$defaultQuestion = {answer: '人戈日口', englishKey: 'OIAR', id: 1, target: '倉'};
 var $author$project$Main$NewQuestion = function (a) {
@@ -5425,7 +5425,7 @@ var $author$project$Main$generateNumber = A2(
 	A2($elm$random$Random$int, 0, $author$project$Questions$maxQuestions));
 var $author$project$Main$init = function (_v0) {
 	return _Utils_Tuple2(
-		A3($author$project$Main$Model, '', false, $author$project$Main$defaultQuestion),
+		A4($author$project$Main$Model, '', false, $author$project$Main$defaultQuestion, true),
 		$author$project$Main$generateNumber);
 };
 var $elm$core$Platform$Sub$batch = _Platform_batch;
@@ -15777,6 +15777,14 @@ var $author$project$Main$showAnswer = function (model) {
 			{showAnswer: true}),
 		$elm$core$Platform$Cmd$none);
 };
+var $elm$core$Basics$not = _Basics_not;
+var $author$project$Main$toggleKeyboard = function (model) {
+	return _Utils_Tuple2(
+		_Utils_update(
+			model,
+			{showVirtualKeyboard: !model.showVirtualKeyboard}),
+		$elm$core$Platform$Cmd$none);
+};
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
@@ -15786,6 +15794,8 @@ var $author$project$Main$update = F2(
 						return $author$project$Main$checkAnswer(model);
 					case '?':
 						return $author$project$Main$showAnswer(model);
+					case '`':
+						return $author$project$Main$toggleKeyboard(model);
 					default:
 						var _char = msg.a;
 						return _Utils_Tuple2(
@@ -15874,7 +15884,6 @@ var $elm$core$Basics$composeL = F3(
 		return g(
 			f(x));
 	});
-var $elm$core$Basics$not = _Basics_not;
 var $elm$core$List$all = F2(
 	function (isOkay, list) {
 		return !A2(
@@ -17381,13 +17390,13 @@ var $rtfeldman$elm_css$Html$Styled$node = $rtfeldman$elm_css$VirtualDom$Styled$n
 var $rtfeldman$elm_css$Html$Styled$div = $rtfeldman$elm_css$Html$Styled$node('div');
 var $rtfeldman$elm_css$Css$flexDirection = $rtfeldman$elm_css$Css$prop1('flex-direction');
 var $rtfeldman$elm_css$Css$fontSize = $rtfeldman$elm_css$Css$prop1('font-size');
-var $rtfeldman$elm_css$Css$height = $rtfeldman$elm_css$Css$prop1('height');
 var $rtfeldman$elm_css$Css$inlineFlex = {display: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'inline-flex'};
 var $rtfeldman$elm_css$Css$prop4 = F5(
 	function (key, argA, argB, argC, argD) {
 		return A2($rtfeldman$elm_css$Css$property, key, argA.value + (' ' + (argB.value + (' ' + (argC.value + (' ' + argD.value))))));
 	});
 var $rtfeldman$elm_css$Css$margin4 = $rtfeldman$elm_css$Css$prop4('margin');
+var $rtfeldman$elm_css$Css$minHeight = $rtfeldman$elm_css$Css$prop1('min-height');
 var $rtfeldman$elm_css$VirtualDom$Styled$Unstyled = function (a) {
 	return {$: 'Unstyled', a: a};
 };
@@ -17439,6 +17448,8 @@ var $rtfeldman$elm_css$Css$Internal$lengthConverter = F3(
 		};
 	});
 var $rtfeldman$elm_css$Css$px = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$PxUnits, 'px');
+var $rtfeldman$elm_css$Css$RemUnits = {$: 'RemUnits'};
+var $rtfeldman$elm_css$Css$rem = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$RemUnits, 'rem');
 var $rtfeldman$elm_css$Css$cssFunction = F2(
 	function (funcName, args) {
 		return funcName + ('(' + (A2($elm$core$String$join, ',', args) + ')'));
@@ -17463,9 +17474,324 @@ var $rtfeldman$elm_css$Css$rgb = F3(
 	});
 var $rtfeldman$elm_css$Css$VhUnits = {$: 'VhUnits'};
 var $rtfeldman$elm_css$Css$vh = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$VhUnits, 'vh');
+var $rtfeldman$elm_css$Css$Preprocess$ApplyStyles = function (a) {
+	return {$: 'ApplyStyles', a: a};
+};
+var $rtfeldman$elm_css$Css$Internal$property = F2(
+	function (key, value) {
+		return $rtfeldman$elm_css$Css$Preprocess$AppendProperty(
+			$rtfeldman$elm_css$Css$Structure$Property(key + (':' + value)));
+	});
+var $rtfeldman$elm_css$Css$Internal$getOverloadedProperty = F3(
+	function (functionName, desiredKey, style) {
+		getOverloadedProperty:
+		while (true) {
+			switch (style.$) {
+				case 'AppendProperty':
+					var str = style.a.a;
+					var key = A2(
+						$elm$core$Maybe$withDefault,
+						'',
+						$elm$core$List$head(
+							A2($elm$core$String$split, ':', str)));
+					return A2($rtfeldman$elm_css$Css$Internal$property, desiredKey, key);
+				case 'ExtendSelector':
+					var selector = style.a;
+					return A2($rtfeldman$elm_css$Css$Internal$property, desiredKey, 'elm-css-error-cannot-apply-' + (functionName + '-with-inapplicable-Style-for-selector'));
+				case 'NestSnippet':
+					var combinator = style.a;
+					return A2($rtfeldman$elm_css$Css$Internal$property, desiredKey, 'elm-css-error-cannot-apply-' + (functionName + '-with-inapplicable-Style-for-combinator'));
+				case 'WithPseudoElement':
+					var pseudoElement = style.a;
+					return A2($rtfeldman$elm_css$Css$Internal$property, desiredKey, 'elm-css-error-cannot-apply-' + (functionName + '-with-inapplicable-Style-for-pseudo-element setter'));
+				case 'WithMedia':
+					return A2($rtfeldman$elm_css$Css$Internal$property, desiredKey, 'elm-css-error-cannot-apply-' + (functionName + '-with-inapplicable-Style-for-media-query'));
+				case 'WithKeyframes':
+					return A2($rtfeldman$elm_css$Css$Internal$property, desiredKey, 'elm-css-error-cannot-apply-' + (functionName + '-with-inapplicable-Style-for-keyframes'));
+				default:
+					if (!style.a.b) {
+						return A2($rtfeldman$elm_css$Css$Internal$property, desiredKey, 'elm-css-error-cannot-apply-' + (functionName + '-with-empty-Style'));
+					} else {
+						if (!style.a.b.b) {
+							var _v1 = style.a;
+							var only = _v1.a;
+							var $temp$functionName = functionName,
+								$temp$desiredKey = desiredKey,
+								$temp$style = only;
+							functionName = $temp$functionName;
+							desiredKey = $temp$desiredKey;
+							style = $temp$style;
+							continue getOverloadedProperty;
+						} else {
+							var _v2 = style.a;
+							var first = _v2.a;
+							var rest = _v2.b;
+							var $temp$functionName = functionName,
+								$temp$desiredKey = desiredKey,
+								$temp$style = $rtfeldman$elm_css$Css$Preprocess$ApplyStyles(rest);
+							functionName = $temp$functionName;
+							desiredKey = $temp$desiredKey;
+							style = $temp$style;
+							continue getOverloadedProperty;
+						}
+					}
+			}
+		}
+	});
+var $rtfeldman$elm_css$Css$Internal$IncompatibleUnits = {$: 'IncompatibleUnits'};
+var $rtfeldman$elm_css$Css$Internal$lengthForOverloadedProperty = A3($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$Internal$IncompatibleUnits, '', 0);
+var $rtfeldman$elm_css$Css$alignItems = function (fn) {
+	return A3(
+		$rtfeldman$elm_css$Css$Internal$getOverloadedProperty,
+		'alignItems',
+		'align-items',
+		fn($rtfeldman$elm_css$Css$Internal$lengthForOverloadedProperty));
+};
+var $rtfeldman$elm_css$Css$center = $rtfeldman$elm_css$Css$prop1('center');
+var $rtfeldman$elm_css$Css$margin = $rtfeldman$elm_css$Css$prop1('margin');
+var $author$project$Main$placeHolder = function (num) {
+	return A2(
+		$rtfeldman$elm_css$Html$Styled$div,
+		_List_fromArray(
+			[
+				$rtfeldman$elm_css$Html$Styled$Attributes$css(
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Css$margin(
+						$rtfeldman$elm_css$Css$rem(num))
+					]))
+			]),
+		_List_Nil);
+};
+var $rtfeldman$elm_css$Html$Styled$button = $rtfeldman$elm_css$Html$Styled$node('button');
+var $rtfeldman$elm_css$Css$height = $rtfeldman$elm_css$Css$prop1('height');
+var $elm$virtual_dom$VirtualDom$Normal = function (a) {
+	return {$: 'Normal', a: a};
+};
+var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
+var $rtfeldman$elm_css$VirtualDom$Styled$on = F2(
+	function (eventName, handler) {
+		return A3(
+			$rtfeldman$elm_css$VirtualDom$Styled$Attribute,
+			A2($elm$virtual_dom$VirtualDom$on, eventName, handler),
+			false,
+			'');
+	});
+var $rtfeldman$elm_css$Html$Styled$Events$on = F2(
+	function (event, decoder) {
+		return A2(
+			$rtfeldman$elm_css$VirtualDom$Styled$on,
+			event,
+			$elm$virtual_dom$VirtualDom$Normal(decoder));
+	});
+var $rtfeldman$elm_css$Html$Styled$Events$onClick = function (msg) {
+	return A2(
+		$rtfeldman$elm_css$Html$Styled$Events$on,
+		'click',
+		$elm$json$Json$Decode$succeed(msg));
+};
+var $author$project$Main$virtualBackspace = A2(
+	$rtfeldman$elm_css$Html$Styled$button,
+	_List_fromArray(
+		[
+			$rtfeldman$elm_css$Html$Styled$Events$onClick(
+			$author$project$Main$Control('Backspace')),
+			$rtfeldman$elm_css$Html$Styled$Attributes$css(
+			_List_fromArray(
+				[
+					$rtfeldman$elm_css$Css$margin(
+					$rtfeldman$elm_css$Css$px(4)),
+					$rtfeldman$elm_css$Css$height(
+					$rtfeldman$elm_css$Css$rem(4)),
+					$rtfeldman$elm_css$Css$fontSize(
+					$rtfeldman$elm_css$Css$px(20))
+				]))
+		]),
+	_List_fromArray(
+		[
+			$rtfeldman$elm_css$Html$Styled$text('Backspace')
+		]));
+var $rtfeldman$elm_css$Css$width = $rtfeldman$elm_css$Css$prop1('width');
+var $author$project$Main$virtualKeyboardBtn = function (_char) {
+	return A2(
+		$rtfeldman$elm_css$Html$Styled$button,
+		_List_fromArray(
+			[
+				$rtfeldman$elm_css$Html$Styled$Events$onClick(
+				$author$project$Main$PressedLetter(_char)),
+				$rtfeldman$elm_css$Html$Styled$Attributes$css(
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Css$margin(
+						$rtfeldman$elm_css$Css$px(4)),
+						$rtfeldman$elm_css$Css$height(
+						$rtfeldman$elm_css$Css$rem(4)),
+						$rtfeldman$elm_css$Css$width(
+						$rtfeldman$elm_css$Css$rem(4)),
+						$rtfeldman$elm_css$Css$fontSize(
+						$rtfeldman$elm_css$Css$px(20))
+					]))
+			]),
+		_List_fromArray(
+			[
+				$rtfeldman$elm_css$Html$Styled$text(
+				$elm$core$String$fromChar(_char))
+			]));
+};
+var $author$project$Main$virtualQuestionMark = A2(
+	$rtfeldman$elm_css$Html$Styled$button,
+	_List_fromArray(
+		[
+			A2(
+			$rtfeldman$elm_css$Html$Styled$Events$on,
+			'pointerdown',
+			$elm$json$Json$Decode$succeed(
+				$author$project$Main$PressedLetter(
+					_Utils_chr('?')))),
+			A2(
+			$rtfeldman$elm_css$Html$Styled$Events$on,
+			'pointerup',
+			$elm$json$Json$Decode$succeed(
+				$author$project$Main$LiftedLetter(
+					_Utils_chr('?')))),
+			$rtfeldman$elm_css$Html$Styled$Attributes$css(
+			_List_fromArray(
+				[
+					$rtfeldman$elm_css$Css$margin(
+					$rtfeldman$elm_css$Css$px(4)),
+					$rtfeldman$elm_css$Css$height(
+					$rtfeldman$elm_css$Css$rem(4)),
+					$rtfeldman$elm_css$Css$width(
+					$rtfeldman$elm_css$Css$rem(4)),
+					$rtfeldman$elm_css$Css$fontSize(
+					$rtfeldman$elm_css$Css$px(20))
+				]))
+		]),
+	_List_fromArray(
+		[
+			$rtfeldman$elm_css$Html$Styled$text('？')
+		]));
+var $author$project$Main$virtualSpace = A2(
+	$rtfeldman$elm_css$Html$Styled$button,
+	_List_fromArray(
+		[
+			$rtfeldman$elm_css$Html$Styled$Events$onClick(
+			$author$project$Main$PressedLetter(
+				_Utils_chr(' '))),
+			$rtfeldman$elm_css$Html$Styled$Attributes$css(
+			_List_fromArray(
+				[
+					$rtfeldman$elm_css$Css$margin(
+					$rtfeldman$elm_css$Css$px(4)),
+					$rtfeldman$elm_css$Css$height(
+					$rtfeldman$elm_css$Css$rem(4)),
+					$rtfeldman$elm_css$Css$width(
+					$rtfeldman$elm_css$Css$rem(20)),
+					$rtfeldman$elm_css$Css$fontSize(
+					$rtfeldman$elm_css$Css$px(20))
+				]))
+		]),
+	_List_fromArray(
+		[
+			$rtfeldman$elm_css$Html$Styled$text('Space')
+		]));
+var $author$project$Main$virtualKeyboard = function (model) {
+	return model.showVirtualKeyboard ? A2(
+		$rtfeldman$elm_css$Html$Styled$div,
+		_List_fromArray(
+			[
+				$rtfeldman$elm_css$Html$Styled$Attributes$css(
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$inlineFlex),
+						$rtfeldman$elm_css$Css$flexDirection($rtfeldman$elm_css$Css$column),
+						$rtfeldman$elm_css$Css$alignItems($rtfeldman$elm_css$Css$center)
+					]))
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$rtfeldman$elm_css$Html$Styled$div,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$author$project$Main$placeHolder(5),
+						$author$project$Main$virtualKeyboardBtn(
+						_Utils_chr('手')),
+						$author$project$Main$virtualKeyboardBtn(
+						_Utils_chr('田')),
+						$author$project$Main$virtualKeyboardBtn(
+						_Utils_chr('水')),
+						$author$project$Main$virtualKeyboardBtn(
+						_Utils_chr('口')),
+						$author$project$Main$virtualKeyboardBtn(
+						_Utils_chr('廿')),
+						$author$project$Main$virtualKeyboardBtn(
+						_Utils_chr('卜')),
+						$author$project$Main$virtualKeyboardBtn(
+						_Utils_chr('山')),
+						$author$project$Main$virtualKeyboardBtn(
+						_Utils_chr('戈')),
+						$author$project$Main$virtualKeyboardBtn(
+						_Utils_chr('人')),
+						$author$project$Main$virtualKeyboardBtn(
+						_Utils_chr('心')),
+						$author$project$Main$virtualBackspace
+					])),
+				A2(
+				$rtfeldman$elm_css$Html$Styled$div,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$author$project$Main$virtualKeyboardBtn(
+						_Utils_chr('日')),
+						$author$project$Main$virtualKeyboardBtn(
+						_Utils_chr('尸')),
+						$author$project$Main$virtualKeyboardBtn(
+						_Utils_chr('木')),
+						$author$project$Main$virtualKeyboardBtn(
+						_Utils_chr('火')),
+						$author$project$Main$virtualKeyboardBtn(
+						_Utils_chr('土')),
+						$author$project$Main$virtualKeyboardBtn(
+						_Utils_chr('竹')),
+						$author$project$Main$virtualKeyboardBtn(
+						_Utils_chr('十')),
+						$author$project$Main$virtualKeyboardBtn(
+						_Utils_chr('大')),
+						$author$project$Main$virtualKeyboardBtn(
+						_Utils_chr('中'))
+					])),
+				A2(
+				$rtfeldman$elm_css$Html$Styled$div,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$author$project$Main$virtualKeyboardBtn(
+						_Utils_chr('重')),
+						$author$project$Main$virtualKeyboardBtn(
+						_Utils_chr('難')),
+						$author$project$Main$virtualKeyboardBtn(
+						_Utils_chr('金')),
+						$author$project$Main$virtualKeyboardBtn(
+						_Utils_chr('女')),
+						$author$project$Main$virtualKeyboardBtn(
+						_Utils_chr('月')),
+						$author$project$Main$virtualKeyboardBtn(
+						_Utils_chr('弓')),
+						$author$project$Main$virtualKeyboardBtn(
+						_Utils_chr('一')),
+						$author$project$Main$virtualQuestionMark
+					])),
+				A2(
+				$rtfeldman$elm_css$Html$Styled$div,
+				_List_Nil,
+				_List_fromArray(
+					[$author$project$Main$virtualSpace]))
+			])) : A2($rtfeldman$elm_css$Html$Styled$div, _List_Nil, _List_Nil);
+};
 var $rtfeldman$elm_css$Css$VwUnits = {$: 'VwUnits'};
 var $rtfeldman$elm_css$Css$vw = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$VwUnits, 'vw');
-var $rtfeldman$elm_css$Css$width = $rtfeldman$elm_css$Css$prop1('width');
 var $author$project$Main$view = function (model) {
 	return A2(
 		$rtfeldman$elm_css$Html$Styled$div,
@@ -17476,7 +17802,7 @@ var $author$project$Main$view = function (model) {
 					[
 						$rtfeldman$elm_css$Css$width(
 						$rtfeldman$elm_css$Css$vw(100.0)),
-						$rtfeldman$elm_css$Css$height(
+						$rtfeldman$elm_css$Css$minHeight(
 						$rtfeldman$elm_css$Css$vh(100.0)),
 						$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$inlineFlex),
 						$rtfeldman$elm_css$Css$flexDirection($rtfeldman$elm_css$Css$column)
@@ -17491,8 +17817,8 @@ var $author$project$Main$view = function (model) {
 						$rtfeldman$elm_css$Html$Styled$Attributes$css(
 						_List_fromArray(
 							[
-								$rtfeldman$elm_css$Css$height(
-								$rtfeldman$elm_css$Css$vh(40.0)),
+								$rtfeldman$elm_css$Css$minHeight(
+								$rtfeldman$elm_css$Css$vh(20.0)),
 								$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$inlineFlex)
 							]))
 					]),
@@ -17527,8 +17853,8 @@ var $author$project$Main$view = function (model) {
 						$rtfeldman$elm_css$Html$Styled$Attributes$css(
 						_List_fromArray(
 							[
-								$rtfeldman$elm_css$Css$height(
-								$rtfeldman$elm_css$Css$vh(40.0)),
+								$rtfeldman$elm_css$Css$minHeight(
+								$rtfeldman$elm_css$Css$vh(10.0)),
 								$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$inlineFlex)
 							]))
 					]),
@@ -17543,9 +17869,9 @@ var $author$project$Main$view = function (model) {
 									[
 										A4(
 										$rtfeldman$elm_css$Css$margin4,
+										$rtfeldman$elm_css$Css$auto,
+										$rtfeldman$elm_css$Css$auto,
 										$rtfeldman$elm_css$Css$px(8),
-										$rtfeldman$elm_css$Css$auto,
-										$rtfeldman$elm_css$Css$auto,
 										$rtfeldman$elm_css$Css$auto),
 										$rtfeldman$elm_css$Css$fontSize(
 										$rtfeldman$elm_css$Css$px(24))
@@ -17563,8 +17889,42 @@ var $author$project$Main$view = function (model) {
 						$rtfeldman$elm_css$Html$Styled$Attributes$css(
 						_List_fromArray(
 							[
-								$rtfeldman$elm_css$Css$height(
-								$rtfeldman$elm_css$Css$vh(20.0)),
+								$rtfeldman$elm_css$Css$minHeight(
+								$rtfeldman$elm_css$Css$vh(60.0)),
+								$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$inlineFlex)
+							]))
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$rtfeldman$elm_css$Html$Styled$div,
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Html$Styled$Attributes$css(
+								_List_fromArray(
+									[
+										A4(
+										$rtfeldman$elm_css$Css$margin4,
+										$rtfeldman$elm_css$Css$auto,
+										$rtfeldman$elm_css$Css$auto,
+										$rtfeldman$elm_css$Css$rem(4),
+										$rtfeldman$elm_css$Css$auto)
+									]))
+							]),
+						_List_fromArray(
+							[
+								$author$project$Main$virtualKeyboard(model)
+							]))
+					])),
+				A2(
+				$rtfeldman$elm_css$Html$Styled$div,
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$Attributes$css(
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$minHeight(
+								$rtfeldman$elm_css$Css$vh(10.0)),
 								$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$inlineFlex),
 								$rtfeldman$elm_css$Css$flexDirection($rtfeldman$elm_css$Css$column),
 								$rtfeldman$elm_css$Css$fontSize(
