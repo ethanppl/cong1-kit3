@@ -64,7 +64,7 @@ view model =
         , div [ css [ height (vh 40.0), display inlineFlex ] ]
             [ div [ css [ margin4 (px 8) auto auto auto, fontSize (px 24) ] ] [ outputBox model ] ]
         , div [ css [ height (vh 20.0), display inlineFlex, flexDirection column, fontSize (px 16), color (rgb 196 196 196) ] ]
-            [ div [ css [ margin4 (px 2) auto (px 2) auto ] ] [ text "在鍵盤上輸入英文字母。Input English letters on your keyboard." ]
+            [ div [ css [ margin4 (px 2) auto (px 2) auto ] ] [ text "在鍵盤上輸入與答案相應的英文字母。Input the corresponding English letters on your keyboard." ]
             , div [ css [ margin4 (px 2) auto (px 2) auto ] ] [ text "按空白鍵檢查答案。Press space to check your answer." ]
             , div [ css [ margin4 (px 2) auto (px 2) auto ] ] [ text "按問號鍵顯示答案。Press ? to show the answer." ]
             ]
