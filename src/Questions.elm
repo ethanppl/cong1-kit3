@@ -1011,7 +1011,7 @@ questions =
         , ( 989, { id = 989, target = "探", answer = "手月金木", englishKey = "QBCD" } )
         , ( 990, { id = 990, target = "滑", answer = "水月月月", englishKey = "EBBB" } )
         , ( 991, { id = 991, target = "鎮", answer = "金十月金", englishKey = "CJBC" } )
-        , ( 992, { id = 992, target = "飯", answer = "人戈一水", englishKey = "OIME" } )
+        , ( 992, { id = 992, target = "飯", answer = "人戈竹水", englishKey = "OIHE" } )
         , ( 993, { id = 993, target = "濃", answer = "水廿田女", englishKey = "ETWV" } )
         , ( 994, { id = 994, target = "航", answer = "竹卜卜竹弓", englishKey = "HYYHN" } )
         , ( 995, { id = 995, target = "懷", answer = "心卜田女", englishKey = "PYWV" } )
