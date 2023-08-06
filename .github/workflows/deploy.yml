@@ -21,9 +21,6 @@ jobs:
           chmod +x elm
           sudo mv elm /usr/local/bin
 
-      - name: Install Dependencies
-        run: elm install
-
       - name: Build Project
         run: elm make src/Main.elm
 
