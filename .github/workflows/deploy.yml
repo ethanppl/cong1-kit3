@@ -24,8 +24,8 @@ jobs:
       - name: Build Project
         run: elm make src/Main.elm
 
-      - name: Move to build
-        run: mkdir public && mv index.html public/index.html && tree
+      - name: Move file to the ./public folder
+        run: mkdir public && mv index.html public/index.html
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
