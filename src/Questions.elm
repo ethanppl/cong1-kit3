@@ -1914,7 +1914,7 @@ questions =
         , ( 1892, { id = 1892, target = "憂", answer = "一月心竹水", englishKey = "MBPHE" } )
         , ( 1893, { id = 1893, target = "脆", answer = "月弓一山", englishKey = "BNMU" } )
         , ( 1894, { id = 1894, target = "閒", answer = "日弓月", englishKey = "ANB" } )
-        , ( 1895, { id = 1895, target = "撲", answer = "手廿一人", englishKey = "QTMO" } )
+        , ( 1895, { id = 1895, target = "撲", answer = "手廿金人", englishKey = "QTCO" } )
         , ( 1896, { id = 1896, target = "漲", answer = "水弓尸女", englishKey = "ENSV" } )
         , ( 1897, { id = 1897, target = "羽", answer = "尸卜尸卜", englishKey = "SYSY" } )
         , ( 1898, { id = 1898, target = "酚", answer = "一田金尸竹", englishKey = "MWCSH" } )
