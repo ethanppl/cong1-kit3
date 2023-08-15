@@ -116,7 +116,7 @@ questions =
         , ( 94, { id = 94, target = "使", answer = "人十中大", englishKey = "OJLK" } )
         , ( 95, { id = 95, target = "點", answer = "田火卜口", englishKey = "WFYR" } )
         , ( 96, { id = 96, target = "從", answer = "竹人人人人", englishKey = "HOOOO" } )
-        , ( 97, { id = 97, target = "業", answer = "廿一廿木", englishKey = "TMTD" } )
+        , ( 97, { id = 97, target = "業", answer = "廿金廿木", englishKey = "TCTD" } )
         , ( 98, { id = 98, target = "本", answer = "木一", englishKey = "DM" } )
         , ( 99, { id = 99, target = "重", answer = "竹十田土", englishKey = "HJWG" } )
         , ( 100, { id = 100, target = "去", answer = "土戈", englishKey = "GI" } )
