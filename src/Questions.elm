@@ -1799,7 +1799,7 @@ questions =
         , ( 1777, { id = 1777, target = "漫", answer = "水日田水", englishKey = "EAWE" } )
         , ( 1778, { id = 1778, target = "澆", answer = "水土土山", englishKey = "EGGU" } )
         , ( 1779, { id = 1779, target = "鈣", answer = "金一卜尸", englishKey = "CMYS" } )
-        , ( 1780, { id = 1780, target = "桃", answer = "木竹卜人", englishKey = "DHYO" } )
+        , ( 1780, { id = 1780, target = "桃", answer = "木中一人", englishKey = "DLMO" } )
         , ( 1781, { id = 1781, target = "仔", answer = "人弓木", englishKey = "OND" } )
         , ( 1782, { id = 1782, target = "扶", answer = "手手人", englishKey = "QQO" } )
         , ( 1783, { id = 1783, target = "俗", answer = "人金人口", englishKey = "OCOR" } )
