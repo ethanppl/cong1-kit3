@@ -10,7 +10,7 @@ A minimal 倉頡 (Cong1 Kit3 or CangJie) input method practice. Check it out her
 This page currently only contains the most common 3000 words. Data came from here:
 
 - [CNS11643 中文標準交換碼全字庫網站](https://www.cns11643.gov.tw/)
-- [常用字頻序表](https://humanum.arts.cuhk.edu.hk/Lexis/lexi-can/faq.php)
+- [ibus-table-cangjie](https://github.com/acevery/ibus-table-cangjie/)
 
 ## Getting Started
 
@@ -33,21 +33,3 @@ elm make src/Main.elm
 - I thought maybe I can try Elm for this one, as someone suggested it to me
 - Turns out Elm is pretty fun to use, the Elm architecture takes some time to learn, but it's worth it
 - It's like the types are teaching you to architect better
-
-## More about the data
-
-- 此字庫的是以五代倉頡碼為基礎，例如「應」的倉頡碼是「戈人土心」，而不是「戈土心」、「拿」的倉頡碼是「人口手」，而不是「人一口手」。
-- 此字庫亦有出錯的地方，例如「飯」的倉頡碼是「人戈竹水」，而不是「人戈一水」。如有發現其他錯誤，[請通知我](https://github.com/ethanppl/cong1-kit3/issues/new)
-
-Fixed:
-
-| Character | Wrong CangJie | Correct CangJie |
-| --------- | ------------- | --------------- |
-| 飯        | 人戈一水      | 人戈竹水        |
-| 撲        | 手廿一人      | 手廿金人        |
-| 業        | 廿一廿木      | 廿金廿木        |
-| 桃        | 木竹卜人      | 木中一人        |
-| 今        | 人一弓        | 人戈弓          |
-| 吟        | 口人一弓      | 口人戈弓        |
-| 琴        | 一土人一弓    | 一土人戈弓      |
-| 鼠        | 竹難尸山山    | 竹難女卜女      |
