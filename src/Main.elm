@@ -6,8 +6,8 @@ import Css exposing (..)
 import Css.Media as Media exposing (only, screen, withMedia)
 import Dict
 import Html.Styled exposing (..)
-import Html.Styled.Attributes exposing (css)
-import Html.Styled.Events exposing (on, onClick)
+import Html.Styled.Attributes exposing (css, placeholder, value, type_)
+import Html.Styled.Events exposing (on, onClick, onInput)
 import Json.Decode as Decode
 import Questions exposing (Question, maxQuestions, questions)
 import Random
@@ -36,6 +36,8 @@ type alias Model =
     , showAnswer : Bool
     , question : Question
     , showVirtualKeyboard : Bool
+    , showSettings : Bool
+    , numMaxQuestion: Int
     }
 
 
@@ -50,8 +52,8 @@ defaultQuestion =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( Model "" False defaultQuestion True
-    , generateNumber
+    ( Model "" False defaultQuestion True False (maxQuestions + 1)
+    , generateNumber maxQuestions
     )
 
 
@@ -61,25 +63,50 @@ init _ =
 
 view : Model -> Html Msg
 view model =
-    div [ css [ width (vw 100.0), minHeight (vh 100.0), display inlineFlex, flexDirection column ] ]
-        [ div [ css [ minHeight (vh 20.0), display inlineFlex ] ]
-            [ div [ css [ margin4 auto auto (px 8) auto, fontSize (px 64) ] ] [ text model.question.target ] ]
-        , div [ css [ minHeight (vh 10.0), display inlineFlex ] ]
-            [ div [ css [ margin4 auto auto (px 8) auto, fontSize (px 24) ] ] [ outputBox model ] ]
-        , div [ css [ minHeight (vh 60.0), display inlineFlex ] ]
-            [ div [ css [ margin4 auto auto (rem 4) auto ] ] [ virtualKeyboard model ] ]
-        , div [ css [ minHeight (vh 10.0), display inlineFlex, flexDirection column, fontSize (px 16), color (rgb 196 196 196) ] ]
-            [ div
-                [ css [ margin4 (px 2) auto (px 2) auto ] ]
-                [ text "在鍵盤上輸入與答案相應的英文字母。Input the corresponding English letters on your keyboard." ]
-            , div
-                [ css [ margin4 (px 2) auto (px 2) auto ] ]
-                [ text "按空白鍵檢查答案。Press space to check your answer." ]
-            , div
-                [ css [ margin4 (px 2) auto (px 2) auto ] ]
-                [ text "按問號鍵顯示答案。Press ? to show the answer." ]
+    if not model.showSettings then 
+        div [ css [ width (vw 100.0), minHeight (vh 100.0), display inlineFlex, flexDirection column ] ]
+            [ div [ css [ minHeight (vh 20.0), display inlineFlex ] ]
+                [ div [ css [ margin4 auto auto (px 8) auto, fontSize (px 64) ] ] [ text model.question.target ] ]
+            , div [ css [ minHeight (vh 10.0), display inlineFlex ] ]
+                [ div [ css [ margin4 auto auto (px 8) auto, fontSize (px 24) ] ] [ outputBox model ] ]
+            , div [ css [ minHeight (vh 60.0), display inlineFlex ] ]
+                [ div [ css [ margin4 auto auto (rem 4) auto ] ] [ virtualKeyboard model ] ]
+            , div [ css [ position absolute, top (rem 1), right (rem 1) ] ]
+                [ settingsBtn ]
             ]
-        ]
+    else 
+        div [ css [ width (vw 100.0), minHeight (vh 100.0), display inlineFlex, flexDirection column ] ]
+            [ div [ css [ position absolute, top (rem 1), right (rem 1) ] ]
+                [ closeSettingsBtn ]
+            , div [ css [ marginTop (rem 5), minHeight (vh 10.0), display inlineFlex, flexDirection column, fontSize (rem 1.25), color (rgb 196 196 196) ] ]
+                [ div
+                    [ css [ margin4 (px 2) auto (px 2) auto ] ]
+                    [ text "在鍵盤上輸入與答案相應的英文字母。Input the corresponding English letters on your keyboard." ]
+                , div
+                    [ css [ margin4 (px 2) auto (px 2) auto ] ]
+                    [ text "按空白鍵檢查答案。Press space to check your answer." ]
+                , div
+                    [ css [ margin4 (px 2) auto (px 2) auto ] ]
+                    [ text "按問號鍵顯示答案。Press ? to show the answer." ]
+                , div
+                    [ css [ margin4 (px 2) auto (px 2) auto ] ]
+                    [ text "按 ` 鍵顯示/隠藏鍵盤。Press ` to show the keyboard." ]
+                ]
+            , div [ css [ marginTop (rem 5), minHeight (vh 10.0), display inlineFlex, flexDirection column, fontSize (rem 1.25) ] ]
+                [ div
+                    [ css [ margin4 (px 2) auto (px 2) auto, display inlineFlex, flexDirection row ] ]
+                    [ div
+                        [ css [ margin4 (px 2) (rem 4) (px 2) auto ] ]
+                        [ text "Number of Questions: " ]
+                    , div
+                        [ css [ margin4 (px 2) auto (px 2) auto ] ]
+                        [ input [ type_ "number", placeholder "", value (String.fromInt model.numMaxQuestion), onInput MaxQuestionUpdated ] [ ] ]
+                    , div
+                        [ css [ margin4 (px 2) auto (px 2) (px 8), color (rgb 196 196 196) ] ]
+                        [ text ("(range is 1 - " ++ (String.fromInt (maxQuestions + 1)) ++ ")")] 
+                    ]
+                ]
+            ]
 
 
 outputBox : Model -> Html Msg
@@ -139,11 +166,12 @@ virtualKeyboard model =
 buttonStyle : Style
 buttonStyle =
     Css.batch
-        [ margin (px 4)
-        , height (rem 5)
-        , width (rem 5)
+        [ margin (rem 0.2)
+        , height (rem 4.5)
+        , width (rem 4.5)
         , fontSize (px 20)
         , touchAction manipulation
+        , borderRadius (rem 0.2)
         ]
 
 
@@ -183,7 +211,17 @@ virtualQuestionMark =
         ]
         [ text "？" ]
 
+settingsBtn : Html Msg
+settingsBtn = 
+    button 
+        [ onClick (ToggleSettings True), css [ buttonStyle ] ]
+        [ text "⚙️" ]
 
+closeSettingsBtn : Html Msg
+closeSettingsBtn = 
+    button 
+        [ onClick (ToggleSettings False), css [ buttonStyle ] ]
+        [ text "✖" ]
 
 -- UPDATE
 
@@ -193,6 +231,8 @@ type Msg
     | Control String
     | LiftedLetter Char
     | NewQuestion Int
+    | ToggleSettings Bool
+    | MaxQuestionUpdated String
     | Ignore
 
 
@@ -200,16 +240,25 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         PressedLetter ' ' ->
-            checkAnswer model
+            if model.showSettings then
+                ( model, Cmd.none )
+            else
+                checkAnswer model
 
         PressedLetter '?' ->
-            showAnswer model
+            if model.showSettings then
+                ( model, Cmd.none )
+            else
+                showAnswer model
 
         PressedLetter '`' ->
             toggleKeyboard model
 
         PressedLetter char ->
-            ( { model | content = String.append model.content <| String.fromChar char }, Cmd.none )
+            if model.showSettings then
+                ( model, Cmd.none )
+            else
+                ( { model | content = String.append model.content <| String.fromChar char }, Cmd.none )
 
         Control "Backspace" ->
             ( { model | content = String.dropRight 1 model.content }, Cmd.none )
@@ -226,6 +275,12 @@ update msg model =
         NewQuestion num ->
             getQuestion model num
 
+        ToggleSettings state ->
+            ( { model | showSettings = state }, Cmd.none )
+
+        MaxQuestionUpdated num ->
+            numMaxQuestionUpdate model (String.toInt num |> Maybe.withDefault model.numMaxQuestion)
+
         Ignore ->
             ( model, Cmd.none )
 
@@ -234,7 +289,7 @@ checkAnswer : Model -> ( Model, Cmd Msg )
 checkAnswer model =
     if model.content == model.question.answer then
         ( { model | content = "" }
-        , generateNumber
+        , generateNumber (model.numMaxQuestion - 1)
         )
 
     else
@@ -259,7 +314,7 @@ toggleKeyboard model =
 getQuestion : Model -> Int -> ( Model, Cmd Msg )
 getQuestion model num =
     if num == model.question.id then
-        ( model, generateNumber )
+        ( model, generateNumber (model.numMaxQuestion - 1) )
 
     else
         case Dict.get num questions of
@@ -270,11 +325,18 @@ getQuestion model num =
                 ( model, Cmd.none )
 
 
-generateNumber : Cmd Msg
-generateNumber =
-    Random.generate NewQuestion (Random.int 0 maxQuestions)
+generateNumber : Int -> Cmd Msg
+generateNumber maxNumber =
+    Random.generate NewQuestion (Random.int 0 maxNumber)
 
-
+numMaxQuestionUpdate : Model -> Int -> ( Model, Cmd Msg )
+numMaxQuestionUpdate model num =
+    if (num) > (maxQuestions + 1) then
+        ( model, Cmd.none )
+    else
+        ( { model | numMaxQuestion = num }
+        , generateNumber (num - 1) 
+        )
 
 -- SUBSCRIPTIONS
 
