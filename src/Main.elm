@@ -32,13 +32,14 @@ main =
 
 
 type alias Model =
-    { content : String                  -- current input
-    , showAnswer : Bool                 -- whether to show the answer
-    , question : Question               -- current question
-    , showVirtualKeyboard : Bool        -- whether to show the virtual keyboard
-    , showSettings : Bool               -- whether to show the settings page
-    , numMaxQuestion: Int               -- the max number of questions to have
-    , numMaxQuestionInput: String       -- temp input for the max number of questions in the settings page
+    { content : String                           -- current input
+    , showAnswer : Bool                          -- whether to show the answer
+    , question : Question                        -- current question
+    , showVirtualKeyboard : Bool                 -- whether to show the virtual keyboard
+    , showSettings : Bool                        -- whether to show the settings page
+    , numMaxQuestion: Int                        -- the max number of questions to have
+    , numMaxQuestionInput: String                -- temp input for the max number of questions in the settings page
+    , questionGenerator: Random.Generator Int    -- Random.Generator for generating random question numbers
     }
 
 
@@ -53,15 +54,20 @@ defaultQuestion =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { content = ""
-      , showAnswer = False
-      , question = defaultQuestion
-      , showVirtualKeyboard = True
-      , showSettings = False
-      , numMaxQuestion = (maxQuestions + 1)
-      , numMaxQuestionInput = (String.fromInt (maxQuestions + 1))
-      }
-    , generateNumber maxQuestions
+    let 
+        model = 
+            { content = ""
+            , showAnswer = False
+            , question = defaultQuestion
+            , showVirtualKeyboard = True
+            , showSettings = False
+            , numMaxQuestion = (maxQuestions + 1)
+            , numMaxQuestionInput = (String.fromInt (maxQuestions + 1))
+            , questionGenerator = Random.int 0 maxQuestions
+            } 
+    in 
+    ( model
+    , generateNumber model
     )
 
 
@@ -114,8 +120,6 @@ view model =
                         [ text ("(range is 1 - " ++ (String.fromInt (maxQuestions + 1)) ++ ")")] 
                     ]
                 ]
-            , div [ css [ minHeight (vh 1.0), display inlineFlex ] ]
-                [ div [ css [ margin4 auto auto (rem 4) auto ] ] [ text (String.fromInt model.numMaxQuestion) ] ]
             ]
 
 
@@ -302,7 +306,7 @@ checkAnswer : Model -> ( Model, Cmd Msg )
 checkAnswer model =
     if model.content == model.question.answer then
         ( { model | content = "" }
-        , generateNumber (model.numMaxQuestion - 1)
+        , generateNumber model
         )
 
     else
@@ -327,7 +331,7 @@ toggleKeyboard model =
 getQuestion : Model -> Int -> ( Model, Cmd Msg )
 getQuestion model num =
     if num /= 0 && num == model.question.id then
-        ( model, generateNumber (model.numMaxQuestion - 1) )
+        ( model, generateNumber model )
 
     else
         case Dict.get num questions of
@@ -338,10 +342,10 @@ getQuestion model num =
                 ( model, Cmd.none )
 
 
--- generate a random number between 0 and maxNumber
-generateNumber : Int -> Cmd Msg
-generateNumber maxNumber =
-    Random.generate NewQuestion (Random.int 0 maxNumber)
+-- generate a random number using the model's Random.Generator
+generateNumber : Model -> Cmd Msg
+generateNumber model =
+    Random.generate NewQuestion model.questionGenerator
 
 -- update the max number of questions
 -- if the input is larger than the max number of questions, do nothing
@@ -351,8 +355,12 @@ numMaxQuestionUpdate model num =
     if num > (maxQuestions + 1) || num < 1 then
         ( model, Cmd.none )
     else
-        ( { model | numMaxQuestion = num }
-        , generateNumber (num - 1) 
+        let 
+            modelUpdated = 
+                { model | numMaxQuestion = num, questionGenerator = Random.int 0 (num - 1) }
+        in
+        ( modelUpdated
+        , generateNumber modelUpdated
         )
 
 -- when open settings, update the input field with the current max number of questions
