@@ -104,7 +104,10 @@ view model =
                     [ text "按問號鍵顯示答案。Press ? to show the answer." ]
                 , div
                     [ css [ margin4 (px 2) auto (px 2) auto ] ]
-                    [ text "按 ` 鍵顯示/隠藏鍵盤。Press ` to show the keyboard." ]
+                    [ text "按 Escape 鍵顯示/隠藏設定。Press Escape to show/hide the settings page." ]
+                , div
+                    [ css [ margin4 (px 2) auto (px 2) auto ] ]
+                    [ text "按 ` 鍵顯示/隠藏鍵盤。Press ` to show/hide the keyboard." ]
                 ]
             , div [ css [ marginTop (rem 5), minHeight (vh 10.0), display inlineFlex, flexDirection column, fontSize (rem 1.25) ] ]
                 [ div
@@ -276,6 +279,13 @@ update msg model =
 
         Control "Backspace" ->
             ( { model | content = String.dropRight 1 model.content }, Cmd.none )
+
+        Control "Escape" ->
+            let state = not model.showSettings in
+            if state then
+                openSettings { model | showSettings = state }
+            else
+                closeSettings { model | showSettings = state }
 
         Control _ ->
             ( model, Cmd.none )
