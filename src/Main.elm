@@ -32,12 +32,13 @@ main =
 
 
 type alias Model =
-    { content : String
-    , showAnswer : Bool
-    , question : Question
-    , showVirtualKeyboard : Bool
-    , showSettings : Bool
-    , numMaxQuestion: Int
+    { content : String                  -- current input
+    , showAnswer : Bool                 -- whether to show the answer
+    , question : Question               -- current question
+    , showVirtualKeyboard : Bool        -- whether to show the virtual keyboard
+    , showSettings : Bool               -- whether to show the settings page
+    , numMaxQuestion: Int               -- the max number of questions to have
+    , numMaxQuestionInput: String       -- temp input for the max number of questions in the settings page
     }
 
 
@@ -52,7 +53,14 @@ defaultQuestion =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( Model "" False defaultQuestion True False (maxQuestions + 1)
+    ( { content = ""
+      , showAnswer = False
+      , question = defaultQuestion
+      , showVirtualKeyboard = True
+      , showSettings = False
+      , numMaxQuestion = (maxQuestions + 1)
+      , numMaxQuestionInput = (String.fromInt (maxQuestions + 1))
+      }
     , generateNumber maxQuestions
     )
 
@@ -100,12 +108,14 @@ view model =
                         [ text "Number of Questions: " ]
                     , div
                         [ css [ margin4 (px 2) auto (px 2) auto ] ]
-                        [ input [ type_ "number", placeholder "", value (String.fromInt model.numMaxQuestion), onInput MaxQuestionUpdated ] [ ] ]
+                        [ input [ type_ "number", placeholder "", value model.numMaxQuestionInput, onInput MaxQuestionUpdated ] [ ] ]
                     , div
                         [ css [ margin4 (px 2) auto (px 2) (px 8), color (rgb 196 196 196) ] ]
                         [ text ("(range is 1 - " ++ (String.fromInt (maxQuestions + 1)) ++ ")")] 
                     ]
                 ]
+            , div [ css [ minHeight (vh 1.0), display inlineFlex ] ]
+                [ div [ css [ margin4 auto auto (rem 4) auto ] ] [ text (String.fromInt model.numMaxQuestion) ] ]
             ]
 
 
@@ -276,10 +286,13 @@ update msg model =
             getQuestion model num
 
         ToggleSettings state ->
-            ( { model | showSettings = state }, Cmd.none )
+            if state then
+                openSettings { model | showSettings = state }
+            else
+                closeSettings { model | showSettings = state }
 
         MaxQuestionUpdated num ->
-            numMaxQuestionUpdate model (String.toInt num |> Maybe.withDefault model.numMaxQuestion)
+            ( { model | numMaxQuestionInput = num }, Cmd.none)
 
         Ignore ->
             ( model, Cmd.none )
@@ -313,7 +326,7 @@ toggleKeyboard model =
 
 getQuestion : Model -> Int -> ( Model, Cmd Msg )
 getQuestion model num =
-    if num == model.question.id then
+    if num /= 0 && num == model.question.id then
         ( model, generateNumber (model.numMaxQuestion - 1) )
 
     else
@@ -325,18 +338,33 @@ getQuestion model num =
                 ( model, Cmd.none )
 
 
+-- generate a random number between 0 and maxNumber
 generateNumber : Int -> Cmd Msg
 generateNumber maxNumber =
     Random.generate NewQuestion (Random.int 0 maxNumber)
 
+-- update the max number of questions
+-- if the input is larger than the max number of questions, do nothing
+-- else, update the max number of questions and generate a new question
 numMaxQuestionUpdate : Model -> Int -> ( Model, Cmd Msg )
 numMaxQuestionUpdate model num =
-    if (num) > (maxQuestions + 1) then
+    if num > (maxQuestions + 1) || num < 1 then
         ( model, Cmd.none )
     else
         ( { model | numMaxQuestion = num }
         , generateNumber (num - 1) 
         )
+
+-- when open settings, update the input field with the current max number of questions
+openSettings : Model -> ( Model, Cmd Msg)
+openSettings model =
+    ( { model | numMaxQuestionInput = (String.fromInt model.numMaxQuestion) }, Cmd.none)
+
+-- when close settings, update the max number of questions with the input field
+-- if failed to convert the input field to int, use the current max number of questions
+closeSettings : Model -> ( Model, Cmd Msg)
+closeSettings model =
+    numMaxQuestionUpdate model (String.toInt model.numMaxQuestionInput |> Maybe.withDefault model.numMaxQuestion)
 
 -- SUBSCRIPTIONS
 
