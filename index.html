@@ -5261,10 +5261,6 @@ var $elm$core$Task$perform = F2(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
 var $elm$browser$Browser$element = _Browser_element;
-var $author$project$Main$Model = F6(
-	function (content, showAnswer, question, showVirtualKeyboard, showSettings, numMaxQuestion) {
-		return {content: content, numMaxQuestion: numMaxQuestion, question: question, showAnswer: showAnswer, showSettings: showSettings, showVirtualKeyboard: showVirtualKeyboard};
-	});
 var $author$project$Main$defaultQuestion = {answer: '人戈日口', englishKey: 'OIAR', id: 1, target: '倉'};
 var $author$project$Main$NewQuestion = function (a) {
 	return {$: 'NewQuestion', a: a};
@@ -5427,7 +5423,15 @@ var $author$project$Main$generateNumber = function (maxNumber) {
 var $author$project$Questions$maxQuestions = 2999;
 var $author$project$Main$init = function (_v0) {
 	return _Utils_Tuple2(
-		A6($author$project$Main$Model, '', false, $author$project$Main$defaultQuestion, true, false, $author$project$Questions$maxQuestions + 1),
+		{
+			content: '',
+			numMaxQuestion: $author$project$Questions$maxQuestions + 1,
+			numMaxQuestionInput: $elm$core$String$fromInt($author$project$Questions$maxQuestions + 1),
+			question: $author$project$Main$defaultQuestion,
+			showAnswer: false,
+			showSettings: false,
+			showVirtualKeyboard: true
+		},
 		$author$project$Main$generateNumber($author$project$Questions$maxQuestions));
 };
 var $elm$core$Platform$Sub$batch = _Platform_batch;
@@ -6735,6 +6739,32 @@ var $author$project$Main$checkAnswer = function (model) {
 			model,
 			{content: ''}),
 		$author$project$Main$generateNumber(model.numMaxQuestion - 1)) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+};
+var $author$project$Main$numMaxQuestionUpdate = F2(
+	function (model, num) {
+		return ((_Utils_cmp(num, $author$project$Questions$maxQuestions + 1) > 0) || (num < 1)) ? _Utils_Tuple2(model, $elm$core$Platform$Cmd$none) : _Utils_Tuple2(
+			_Utils_update(
+				model,
+				{numMaxQuestion: num}),
+			$author$project$Main$generateNumber(num - 1));
+	});
+var $elm$core$Maybe$withDefault = F2(
+	function (_default, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return value;
+		} else {
+			return _default;
+		}
+	});
+var $author$project$Main$closeSettings = function (model) {
+	return A2(
+		$author$project$Main$numMaxQuestionUpdate,
+		model,
+		A2(
+			$elm$core$Maybe$withDefault,
+			model.numMaxQuestion,
+			$elm$core$String$toInt(model.numMaxQuestionInput)));
 };
 var $elm$core$String$dropRight = F2(
 	function (n, string) {
@@ -15749,7 +15779,7 @@ var $author$project$Questions$questions = $elm$core$Dict$fromList(
 		]));
 var $author$project$Main$getQuestion = F2(
 	function (model, num) {
-		if (_Utils_eq(num, model.question.id)) {
+		if ((!(!num)) && _Utils_eq(num, model.question.id)) {
 			return _Utils_Tuple2(
 				model,
 				$author$project$Main$generateNumber(model.numMaxQuestion - 1));
@@ -15774,14 +15804,15 @@ var $author$project$Main$hideAnswer = function (model) {
 			{showAnswer: false}),
 		$elm$core$Platform$Cmd$none);
 };
-var $author$project$Main$numMaxQuestionUpdate = F2(
-	function (model, num) {
-		return (_Utils_cmp(num, $author$project$Questions$maxQuestions + 1) > 0) ? _Utils_Tuple2(model, $elm$core$Platform$Cmd$none) : _Utils_Tuple2(
-			_Utils_update(
-				model,
-				{numMaxQuestion: num}),
-			$author$project$Main$generateNumber(num - 1));
-	});
+var $author$project$Main$openSettings = function (model) {
+	return _Utils_Tuple2(
+		_Utils_update(
+			model,
+			{
+				numMaxQuestionInput: $elm$core$String$fromInt(model.numMaxQuestion)
+			}),
+		$elm$core$Platform$Cmd$none);
+};
 var $author$project$Main$showAnswer = function (model) {
 	return _Utils_Tuple2(
 		_Utils_update(
@@ -15797,15 +15828,6 @@ var $author$project$Main$toggleKeyboard = function (model) {
 			{showVirtualKeyboard: !model.showVirtualKeyboard}),
 		$elm$core$Platform$Cmd$none);
 };
-var $elm$core$Maybe$withDefault = F2(
-	function (_default, maybe) {
-		if (maybe.$ === 'Just') {
-			var value = maybe.a;
-			return value;
-		} else {
-			return _default;
-		}
-	});
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
@@ -15853,20 +15875,20 @@ var $author$project$Main$update = F2(
 				return A2($author$project$Main$getQuestion, model, num);
 			case 'ToggleSettings':
 				var state = msg.a;
+				return state ? $author$project$Main$openSettings(
+					_Utils_update(
+						model,
+						{showSettings: state})) : $author$project$Main$closeSettings(
+					_Utils_update(
+						model,
+						{showSettings: state}));
+			case 'MaxQuestionUpdated':
+				var num = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{showSettings: state}),
+						{numMaxQuestionInput: num}),
 					$elm$core$Platform$Cmd$none);
-			case 'MaxQuestionUpdated':
-				var num = msg.a;
-				return A2(
-					$author$project$Main$numMaxQuestionUpdate,
-					model,
-					A2(
-						$elm$core$Maybe$withDefault,
-						model.numMaxQuestion,
-						$elm$core$String$toInt(num)));
 			default:
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 		}
@@ -18234,8 +18256,7 @@ var $author$project$Main$view = function (model) {
 											[
 												$rtfeldman$elm_css$Html$Styled$Attributes$type_('number'),
 												$rtfeldman$elm_css$Html$Styled$Attributes$placeholder(''),
-												$rtfeldman$elm_css$Html$Styled$Attributes$value(
-												$elm$core$String$fromInt(model.numMaxQuestion)),
+												$rtfeldman$elm_css$Html$Styled$Attributes$value(model.numMaxQuestionInput),
 												$rtfeldman$elm_css$Html$Styled$Events$onInput($author$project$Main$MaxQuestionUpdated)
 											]),
 										_List_Nil)
@@ -18262,6 +18283,41 @@ var $author$project$Main$view = function (model) {
 										$rtfeldman$elm_css$Html$Styled$text(
 										'(range is 1 - ' + ($elm$core$String$fromInt($author$project$Questions$maxQuestions + 1) + ')'))
 									]))
+							]))
+					])),
+				A2(
+				$rtfeldman$elm_css$Html$Styled$div,
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$Attributes$css(
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$minHeight(
+								$rtfeldman$elm_css$Css$vh(1.0)),
+								$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$inlineFlex)
+							]))
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$rtfeldman$elm_css$Html$Styled$div,
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Html$Styled$Attributes$css(
+								_List_fromArray(
+									[
+										A4(
+										$rtfeldman$elm_css$Css$margin4,
+										$rtfeldman$elm_css$Css$auto,
+										$rtfeldman$elm_css$Css$auto,
+										$rtfeldman$elm_css$Css$rem(4),
+										$rtfeldman$elm_css$Css$auto)
+									]))
+							]),
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Html$Styled$text(
+								$elm$core$String$fromInt(model.numMaxQuestion))
 							]))
 					]))
 			]));
