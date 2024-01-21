@@ -6,7 +6,7 @@ import Css exposing (..)
 import Css.Media as Media exposing (only, screen, withMedia)
 import Dict
 import Html.Styled exposing (..)
-import Html.Styled.Attributes exposing (css, placeholder, value, type_)
+import Html.Styled.Attributes exposing (css, placeholder, type_, value)
 import Html.Styled.Events exposing (on, onClick, onInput)
 import Json.Decode as Decode
 import Questions exposing (Question, maxQuestions, questions)
@@ -27,18 +27,19 @@ main =
         }
 
 
+
 -- MODEL
 
 
 type alias Model =
-    { content : String                           -- current input
-    , showAnswer : Bool                          -- whether to show the answer
-    , question : Question                        -- current question
-    , showVirtualKeyboard : Bool                 -- whether to show the virtual keyboard
-    , showSettings : Bool                        -- whether to show the settings page
-    , numMaxQuestion: Int                        -- the max number of questions to have
-    , numMaxQuestionInput: String                -- temp input for the max number of questions in the settings page
-    , questionGenerator: Random.Generator Int    -- Random.Generator for generating random question numbers
+    { content : String -- current input
+    , showAnswer : Bool -- whether to show the answer
+    , question : Question -- current question
+    , showVirtualKeyboard : Bool -- whether to show the virtual keyboard
+    , showSettings : Bool -- whether to show the settings page
+    , numMaxQuestion : Int -- the max number of questions to have
+    , numMaxQuestionInput : String -- temp input for the max number of questions in the settings page
+    , questionGenerator : Random.Generator Int -- Random.Generator for generating random question numbers
     }
 
 
@@ -53,18 +54,18 @@ defaultQuestion =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    let 
-        model = 
+    let
+        model =
             { content = ""
             , showAnswer = False
             , question = defaultQuestion
             , showVirtualKeyboard = True
             , showSettings = False
-            , numMaxQuestion = (maxQuestions + 1)
-            , numMaxQuestionInput = (String.fromInt (maxQuestions + 1))
+            , numMaxQuestion = maxQuestions + 1
+            , numMaxQuestionInput = String.fromInt (maxQuestions + 1)
             , questionGenerator = Random.int 0 maxQuestions
-            } 
-    in 
+            }
+    in
     ( model
     , generateNumber model
     )
@@ -77,8 +78,8 @@ init _ =
 view : Model -> Browser.Document Msg
 view model =
     let
-        content = 
-            if not model.showSettings then 
+        content =
+            if not model.showSettings then
                 div [ css [ width (vw 100.0), minHeight (vh 100.0), display inlineFlex, flexDirection column ] ]
                     [ div [ css [ minHeight (vh 20.0), display inlineFlex ] ]
                         [ div [ css [ margin4 auto auto (px 8) auto, fontSize (px 64) ] ] [ text model.question.target ] ]
@@ -89,7 +90,8 @@ view model =
                     , div [ css [ position absolute, top (rem 1), right (rem 1) ] ]
                         [ settingsBtn ]
                     ]
-            else 
+
+            else
                 div [ css [ width (vw 100.0), minHeight (vh 100.0), display inlineFlex, flexDirection column ] ]
                     [ div [ css [ position absolute, top (rem 1), right (rem 1) ] ]
                         [ closeSettingsBtn ]
@@ -118,10 +120,10 @@ view model =
                                 [ text "Number of Questions: " ]
                             , div
                                 [ css [ margin4 (px 2) auto (px 2) auto ] ]
-                                [ input [ type_ "number", placeholder "", value model.numMaxQuestionInput, onInput MaxQuestionUpdated ] [ ] ]
+                                [ input [ type_ "number", placeholder "", value model.numMaxQuestionInput, onInput MaxQuestionUpdated ] [] ]
                             , div
                                 [ css [ margin4 (px 2) auto (px 2) (px 8), color (rgb 196 196 196) ] ]
-                                [ text ("(range is 1 - " ++ (String.fromInt (maxQuestions + 1)) ++ ")")] 
+                                [ text ("(range is 1 - " ++ String.fromInt (maxQuestions + 1) ++ ")") ]
                             ]
                         ]
                     ]
@@ -233,17 +235,21 @@ virtualQuestionMark =
         ]
         [ text "？" ]
 
+
 settingsBtn : Html Msg
-settingsBtn = 
-    button 
+settingsBtn =
+    button
         [ onClick (ToggleSettings True), css [ buttonStyle ] ]
         [ text "⚙️" ]
 
+
 closeSettingsBtn : Html Msg
-closeSettingsBtn = 
-    button 
+closeSettingsBtn =
+    button
         [ onClick (ToggleSettings False), css [ buttonStyle ] ]
         [ text "✖" ]
+
+
 
 -- UPDATE
 
@@ -264,12 +270,14 @@ update msg model =
         PressedLetter ' ' ->
             if model.showSettings then
                 ( model, Cmd.none )
+
             else
                 checkAnswer model
 
         PressedLetter '?' ->
             if model.showSettings then
                 ( model, Cmd.none )
+
             else
                 showAnswer model
 
@@ -279,6 +287,7 @@ update msg model =
         PressedLetter char ->
             if model.showSettings then
                 ( model, Cmd.none )
+
             else
                 ( { model | content = String.append model.content <| String.fromChar char }, Cmd.none )
 
@@ -286,9 +295,13 @@ update msg model =
             ( { model | content = String.dropRight 1 model.content }, Cmd.none )
 
         Control "Escape" ->
-            let state = not model.showSettings in
+            let
+                state =
+                    not model.showSettings
+            in
             if state then
                 openSettings { model | showSettings = state }
+
             else
                 closeSettings { model | showSettings = state }
 
@@ -307,11 +320,12 @@ update msg model =
         ToggleSettings state ->
             if state then
                 openSettings { model | showSettings = state }
+
             else
                 closeSettings { model | showSettings = state }
 
         MaxQuestionUpdated num ->
-            ( { model | numMaxQuestionInput = num }, Cmd.none)
+            ( { model | numMaxQuestionInput = num }, Cmd.none )
 
         Ignore ->
             ( model, Cmd.none )
@@ -357,37 +371,55 @@ getQuestion model num =
                 ( model, Cmd.none )
 
 
+
 -- generate a random number using the model's Random.Generator
+
+
 generateNumber : Model -> Cmd Msg
 generateNumber model =
     Random.generate NewQuestion model.questionGenerator
 
+
+
 -- update the max number of questions
 -- if the input is larger than the max number of questions, do nothing
 -- else, update the max number of questions and generate a new question
+
+
 numMaxQuestionUpdate : Model -> Int -> ( Model, Cmd Msg )
 numMaxQuestionUpdate model num =
     if num > (maxQuestions + 1) || num < 1 then
         ( model, Cmd.none )
+
     else
-        let 
-            modelUpdated = 
+        let
+            modelUpdated =
                 { model | numMaxQuestion = num, questionGenerator = Random.int 0 (num - 1) }
         in
         ( modelUpdated
         , generateNumber modelUpdated
         )
 
+
+
 -- when open settings, update the input field with the current max number of questions
-openSettings : Model -> ( Model, Cmd Msg)
+
+
+openSettings : Model -> ( Model, Cmd Msg )
 openSettings model =
-    ( { model | numMaxQuestionInput = (String.fromInt model.numMaxQuestion) }, Cmd.none)
+    ( { model | numMaxQuestionInput = String.fromInt model.numMaxQuestion }, Cmd.none )
+
+
 
 -- when close settings, update the max number of questions with the input field
 -- if failed to convert the input field to int, use the current max number of questions
-closeSettings : Model -> ( Model, Cmd Msg)
+
+
+closeSettings : Model -> ( Model, Cmd Msg )
 closeSettings model =
     numMaxQuestionUpdate model (String.toInt model.numMaxQuestionInput |> Maybe.withDefault model.numMaxQuestion)
+
+
 
 -- SUBSCRIPTIONS
 
