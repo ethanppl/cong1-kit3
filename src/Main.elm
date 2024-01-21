@@ -19,13 +19,12 @@ import Random
 
 main : Program () Model Msg
 main =
-    Browser.element
+    Browser.document
         { init = init
-        , view = view >> toUnstyled
+        , view = view
         , update = update
         , subscriptions = subscriptions
         }
-
 
 
 -- MODEL
@@ -75,55 +74,61 @@ init _ =
 -- VIEW
 
 
-view : Model -> Html Msg
+view : Model -> Browser.Document Msg
 view model =
-    if not model.showSettings then 
-        div [ css [ width (vw 100.0), minHeight (vh 100.0), display inlineFlex, flexDirection column ] ]
-            [ div [ css [ minHeight (vh 20.0), display inlineFlex ] ]
-                [ div [ css [ margin4 auto auto (px 8) auto, fontSize (px 64) ] ] [ text model.question.target ] ]
-            , div [ css [ minHeight (vh 10.0), display inlineFlex ] ]
-                [ div [ css [ margin4 auto auto (px 8) auto, fontSize (px 24) ] ] [ outputBox model ] ]
-            , div [ css [ minHeight (vh 60.0), display inlineFlex ] ]
-                [ div [ css [ margin4 auto auto (rem 4) auto ] ] [ virtualKeyboard model ] ]
-            , div [ css [ position absolute, top (rem 1), right (rem 1) ] ]
-                [ settingsBtn ]
-            ]
-    else 
-        div [ css [ width (vw 100.0), minHeight (vh 100.0), display inlineFlex, flexDirection column ] ]
-            [ div [ css [ position absolute, top (rem 1), right (rem 1) ] ]
-                [ closeSettingsBtn ]
-            , div [ css [ marginTop (rem 5), minHeight (vh 10.0), display inlineFlex, flexDirection column, fontSize (rem 1.25), color (rgb 196 196 196) ] ]
-                [ div
-                    [ css [ margin4 (px 2) auto (px 2) auto ] ]
-                    [ text "在鍵盤上輸入與答案相應的英文字母。Input the corresponding English letters on your keyboard." ]
-                , div
-                    [ css [ margin4 (px 2) auto (px 2) auto ] ]
-                    [ text "按空白鍵檢查答案。Press space to check your answer." ]
-                , div
-                    [ css [ margin4 (px 2) auto (px 2) auto ] ]
-                    [ text "按問號鍵顯示答案。Press ? to show the answer." ]
-                , div
-                    [ css [ margin4 (px 2) auto (px 2) auto ] ]
-                    [ text "按 Escape 鍵顯示/隠藏設定。Press Escape to show/hide the settings page." ]
-                , div
-                    [ css [ margin4 (px 2) auto (px 2) auto ] ]
-                    [ text "按 ` 鍵顯示/隠藏鍵盤。Press ` to show/hide the keyboard." ]
-                ]
-            , div [ css [ marginTop (rem 5), minHeight (vh 10.0), display inlineFlex, flexDirection column, fontSize (rem 1.25) ] ]
-                [ div
-                    [ css [ margin4 (px 2) auto (px 2) auto, display inlineFlex, flexDirection row ] ]
-                    [ div
-                        [ css [ margin4 (px 2) (rem 4) (px 2) auto ] ]
-                        [ text "Number of Questions: " ]
-                    , div
-                        [ css [ margin4 (px 2) auto (px 2) auto ] ]
-                        [ input [ type_ "number", placeholder "", value model.numMaxQuestionInput, onInput MaxQuestionUpdated ] [ ] ]
-                    , div
-                        [ css [ margin4 (px 2) auto (px 2) (px 8), color (rgb 196 196 196) ] ]
-                        [ text ("(range is 1 - " ++ (String.fromInt (maxQuestions + 1)) ++ ")")] 
+    let
+        content = 
+            if not model.showSettings then 
+                div [ css [ width (vw 100.0), minHeight (vh 100.0), display inlineFlex, flexDirection column ] ]
+                    [ div [ css [ minHeight (vh 20.0), display inlineFlex ] ]
+                        [ div [ css [ margin4 auto auto (px 8) auto, fontSize (px 64) ] ] [ text model.question.target ] ]
+                    , div [ css [ minHeight (vh 10.0), display inlineFlex ] ]
+                        [ div [ css [ margin4 auto auto (px 8) auto, fontSize (px 24) ] ] [ outputBox model ] ]
+                    , div [ css [ minHeight (vh 60.0), display inlineFlex ] ]
+                        [ div [ css [ margin4 auto auto (rem 4) auto ] ] [ virtualKeyboard model ] ]
+                    , div [ css [ position absolute, top (rem 1), right (rem 1) ] ]
+                        [ settingsBtn ]
                     ]
-                ]
-            ]
+            else 
+                div [ css [ width (vw 100.0), minHeight (vh 100.0), display inlineFlex, flexDirection column ] ]
+                    [ div [ css [ position absolute, top (rem 1), right (rem 1) ] ]
+                        [ closeSettingsBtn ]
+                    , div [ css [ marginTop (rem 5), minHeight (vh 10.0), display inlineFlex, flexDirection column, fontSize (rem 1.25), color (rgb 196 196 196) ] ]
+                        [ div
+                            [ css [ margin4 (px 2) auto (px 2) auto ] ]
+                            [ text "在鍵盤上輸入與答案相應的英文字母。Input the corresponding English letters on your keyboard." ]
+                        , div
+                            [ css [ margin4 (px 2) auto (px 2) auto ] ]
+                            [ text "按空白鍵檢查答案。Press space to check your answer." ]
+                        , div
+                            [ css [ margin4 (px 2) auto (px 2) auto ] ]
+                            [ text "按問號鍵顯示答案。Press ? to show the answer." ]
+                        , div
+                            [ css [ margin4 (px 2) auto (px 2) auto ] ]
+                            [ text "按 Escape 鍵顯示/隠藏設定。Press Escape to show/hide the settings page." ]
+                        , div
+                            [ css [ margin4 (px 2) auto (px 2) auto ] ]
+                            [ text "按 ` 鍵顯示/隠藏鍵盤。Press ` to show/hide the keyboard." ]
+                        ]
+                    , div [ css [ marginTop (rem 5), minHeight (vh 10.0), display inlineFlex, flexDirection column, fontSize (rem 1.25) ] ]
+                        [ div
+                            [ css [ margin4 (px 2) auto (px 2) auto, display inlineFlex, flexDirection row ] ]
+                            [ div
+                                [ css [ margin4 (px 2) (rem 4) (px 2) auto ] ]
+                                [ text "Number of Questions: " ]
+                            , div
+                                [ css [ margin4 (px 2) auto (px 2) auto ] ]
+                                [ input [ type_ "number", placeholder "", value model.numMaxQuestionInput, onInput MaxQuestionUpdated ] [ ] ]
+                            , div
+                                [ css [ margin4 (px 2) auto (px 2) (px 8), color (rgb 196 196 196) ] ]
+                                [ text ("(range is 1 - " ++ (String.fromInt (maxQuestions + 1)) ++ ")")] 
+                            ]
+                        ]
+                    ]
+    in
+    { title = "倉頡練習"
+    , body = [ toUnstyled content ]
+    }
 
 
 outputBox : Model -> Html Msg
