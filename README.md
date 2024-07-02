@@ -33,3 +33,17 @@ elm make src/Main.elm
 - I thought maybe I can try Elm for this one, as someone suggested it to me
 - Turns out Elm is pretty fun to use, the Elm architecture takes some time to learn, but it's worth it
 - It's like the types are teaching you to architect better
+
+## Potential Improvements
+
+- Data:
+  - Make answers a list, some words can have multiple code
+  - More words
+- UI:
+  - Keyboard size and buttons
+  - Dark mode
+- Performance and practice:
+  - Add history
+  - Repeat words that failed or took a longer time
+  - Add explanation, maybe link to external webpage
+  - Custom practice pack
