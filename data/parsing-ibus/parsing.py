@@ -26,13 +26,20 @@ def getCodes(filePath):
         if len(splittedLine) < 2:
             continue
 
+        # For letters to words mapping, only the first 25 lines are letters
         if count < 25:
             codes['codesToWord'][splittedLine[0]] = splittedLine[1]
 
+        # For the specific case where 'x' is mapped to '難'
         if splittedLine[0] == 'x' and splittedLine[1] == '難':
             continue
         
-        codes['wordsToCode'][splittedLine[1]] = splittedLine[0]
+        # Try not to alter the existing mapping if the word is already mapped
+        # There are some words with multiple codes, so we try not to override
+        # the existing code with a less common one. Especially for the words
+        # that have an extra code starting with 'x'.
+        if not splittedLine[1] in codes['wordsToCode']:
+            codes['wordsToCode'][splittedLine[1]] = splittedLine[0]
 
         count += 1
 
