@@ -33,3 +33,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           user_name: ethanppl
           user_email: 43922849+ethanppl@users.noreply.github.com
+          cname: cong1kit3.ethanppl.com
