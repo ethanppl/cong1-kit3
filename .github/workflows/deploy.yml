@@ -22,10 +22,10 @@ jobs:
           sudo mv elm /usr/local/bin
 
       - name: Build Project
-        run: elm make src/Main.elm
+        run: elm make src/Main.elm --output=index.js
 
       - name: Move file to the ./public folder
-        run: mkdir public && mv index.html public/index.html
+        run: mkdir public && mv index.html public/index.html && mv index.js public/index.js
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
