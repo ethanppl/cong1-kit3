@@ -82,11 +82,11 @@ view model =
             if not model.showSettings then
                 div [ css [ width (vw 100.0), minHeight (vh 100.0), display inlineFlex, flexDirection column ] ]
                     [ div [ css [ minHeight (vh 20.0), display inlineFlex ] ]
-                        [ div [ css [ margin4 auto auto (px 8) auto, fontSize (px 64) ] ] [ text model.question.target ] ]
+                        [ div [ css [ margin4 auto auto (px 8) auto, fontSize (rem 3) ] ] [ text model.question.target ] ]
                     , div [ css [ minHeight (vh 10.0), display inlineFlex ] ]
-                        [ div [ css [ margin4 auto auto (px 8) auto, fontSize (px 24) ] ] [ outputBox model ] ]
+                        [ div [ css [ margin4 auto auto (px 8) auto, fontSize (rem 1.5) ] ] [ outputBox model ] ]
                     , div [ css [ minHeight (vh 60.0), display inlineFlex ] ]
-                        [ div [ css [ margin4 auto auto (rem 4) auto ] ] [ virtualKeyboard model ] ]
+                        [ div [ css [ withMedia [ only screen [ Media.maxWidth (px 1000) ] ] [ width (pct 100) ], margin4 auto auto (rem 4) auto, width (px 1000)  ] ] [ virtualKeyboard model ] ]
                     , div [ css [ position absolute, top (rem 1), right (rem 1) ] ]
                         [ settingsBtn ]
                     ]
@@ -145,8 +145,8 @@ outputBox model =
 virtualKeyboard : Model -> Html Msg
 virtualKeyboard model =
     if model.showVirtualKeyboard then
-        div [ css [ display inlineFlex, flexDirection column, alignItems center ] ]
-            [ div []
+        div [ css [ display inlineFlex, flexDirection column, alignItems center, width (pct 100) ] ]
+            [ div [ css [display inlineFlex, flexDirection row, width (pct 100)] ]
                 [ virtualKeyboardBtn '手'
                 , virtualKeyboardBtn '田'
                 , virtualKeyboardBtn '水'
@@ -159,7 +159,7 @@ virtualKeyboard model =
                 , virtualKeyboardBtn '心'
                 , virtualBackspace
                 ]
-            , div []
+            , div [ css [display inlineFlex, flexDirection row, width (pct 82)] ]
                 [ virtualKeyboardBtn '日'
                 , virtualKeyboardBtn '尸'
                 , virtualKeyboardBtn '木'
@@ -170,7 +170,7 @@ virtualKeyboard model =
                 , virtualKeyboardBtn '大'
                 , virtualKeyboardBtn '中'
                 ]
-            , div []
+            , div [ css [display inlineFlex, flexDirection row, width (pct 72)] ]
                 [ virtualKeyboardBtn '重'
                 , virtualKeyboardBtn '難'
                 , virtualKeyboardBtn '金'
@@ -180,7 +180,7 @@ virtualKeyboard model =
                 , virtualKeyboardBtn '一'
                 , virtualQuestionMark
                 ]
-            , div [] [ virtualSpace ]
+            , div [ css [ width (pct 60) ] ] [ virtualSpace ]
             ]
 
     else
@@ -191,11 +191,13 @@ buttonStyle : Style
 buttonStyle =
     Css.batch
         [ margin (rem 0.2)
-        , height (rem 4.5)
-        , width (rem 4.5)
-        , fontSize (px 20)
+        , height (rem 4)
+        , display inlineFlex
+        , flexGrow (num 1)
+        , fontSize (rem 1)
         , touchAction manipulation
-        , borderRadius (rem 0.2)
+        , borderRadius (rem 0.5)
+        , withMedia [ only screen [ Media.minHeight (px 1200) ] ] [ height (rem 6) ]
         ]
 
 
@@ -205,7 +207,7 @@ virtualKeyboardBtn char =
         [ onClick (PressedLetter char)
         , css [ buttonStyle ]
         ]
-        [ text <| String.fromChar char ]
+        [ span [ css [width (pct 100), margin auto] ] [text <| String.fromChar char ] ]
 
 
 virtualBackspace : Html Msg
@@ -214,16 +216,16 @@ virtualBackspace =
         [ onClick (Control "Backspace")
         , css [ buttonStyle ]
         ]
-        [ text "←" ]
+        [ span [ css [width (pct 100), margin auto] ] [text "←" ] ]
 
 
 virtualSpace : Html Msg
 virtualSpace =
     button
         [ onClick (PressedLetter ' ')
-        , css [ buttonStyle, width (rem 20) ]
+        , css [ buttonStyle, width (pct 100) ]
         ]
-        [ text "Space" ]
+        [ span [ css [width (pct 100), margin auto] ] [text "Space" ] ]
 
 
 virtualQuestionMark : Html Msg
@@ -233,21 +235,21 @@ virtualQuestionMark =
         , on "pointerup" <| Decode.succeed <| LiftedLetter '?'
         , css [ buttonStyle ]
         ]
-        [ text "？" ]
+        [ span [ css [width (pct 100), margin auto] ] [text "？" ] ]
 
 
 settingsBtn : Html Msg
 settingsBtn =
     button
         [ onClick (ToggleSettings True), css [ buttonStyle ] ]
-        [ text "⚙️" ]
+        [ span [ css [width (rem 4), margin auto] ] [text "⚙️" ] ]
 
 
 closeSettingsBtn : Html Msg
 closeSettingsBtn =
     button
         [ onClick (ToggleSettings False), css [ buttonStyle ] ]
-        [ text "✖" ]
+        [ span [ css [width (rem 4), margin auto] ] [text "✖" ] ]
 
 
 
