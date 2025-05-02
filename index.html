@@ -1,9 +1,16 @@
-<html>
+<html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
-  <title>Main</title>
+  <meta name="description" content="免費無廣告繁體中文字倉頡練習, 包括3000常用字">
+  <meta name="keywords" content="倉頡, 練習, 繁體, 中文字">
+  <meta name="author" content="Ethan Pang">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="canonical" href="https://cong1kit3.ethanppl.com">
+
+  <title>繁體中文倉頡練習</title>
   <script src="index.js"></script>
   <script defer data-domain="cong1kit3.ethanppl.com" src="https://plausible.ethanppl.com/js/script.js"></script>
+  <script>window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }</script>
   <style>
     body {
       margin: 0px;
@@ -13,9 +20,15 @@
 
 <body>
   <div id="myapp"></div>
-  <script>
+  <script type="text/javascript">
     var app = Elm.Main.init({
       node: document.getElementById('myapp')
+    });
+
+    // Subscribe to the Elm port and call the JavaScript function
+    app.ports.sendPlausibleEvent.subscribe(function(data) {
+      // Call the global JavaScript function with data from Elm
+      plausible(data);
     });
   </script>
 </body>

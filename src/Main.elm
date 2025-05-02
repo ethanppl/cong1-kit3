@@ -1,4 +1,4 @@
-module Main exposing (main)
+port module Main exposing (main)
 
 import Browser
 import Browser.Events exposing (onKeyDown, onKeyUp)
@@ -6,11 +6,18 @@ import Css exposing (..)
 import Css.Media as Media exposing (only, screen, withMedia)
 import Dict
 import Html.Styled exposing (..)
-import Html.Styled.Attributes exposing (css, placeholder, type_, value)
+import Html.Styled.Attributes exposing (class, css, placeholder, type_, value)
 import Html.Styled.Events exposing (on, onClick, onInput)
 import Json.Decode as Decode
 import Questions exposing (Question, maxQuestions, questions)
 import Random
+
+
+
+-- PORTS
+
+
+port sendPlausibleEvent : String -> Cmd msg
 
 
 
@@ -80,22 +87,28 @@ view model =
     let
         content =
             if not model.showSettings then
-                div [ css [ width (vw 100.0), minHeight (vh 100.0), display inlineFlex, flexDirection column ] ]
-                    [ div [ css [ minHeight (vh 20.0), display inlineFlex ] ]
+                div [ css [ width (vw 100.0), minHeight (vh 100.0), displayFlex, flexDirection column ] ]
+                    [ div [ css [ minHeight (vh 20.0), displayFlex ] ]
                         [ div [ css [ margin4 auto auto (px 8) auto, fontSize (rem 3) ] ] [ text model.question.target ] ]
-                    , div [ css [ minHeight (vh 10.0), display inlineFlex ] ]
+                    , div [ css [ minHeight (vh 10.0), displayFlex ] ]
                         [ div [ css [ margin4 auto auto (px 8) auto, fontSize (rem 1.5) ] ] [ outputBox model ] ]
-                    , div [ css [ minHeight (vh 60.0), display inlineFlex ] ]
-                        [ div [ css [ withMedia [ only screen [ Media.maxWidth (px 1000) ] ] [ width (pct 100) ], margin4 auto auto (rem 4) auto, width (px 1000)  ] ] [ virtualKeyboard model ] ]
+                    , div [ css [ minHeight (vh 60.0), displayFlex ] ]
+                        [ div
+                            [ css [ withMedia [ only screen [ Media.maxWidth (px 1000) ] ] [ width (pct 100) ], margin4 auto auto (rem 4) auto, width (px 1000) ] ]
+                            [ virtualKeyboard model ]
+                        ]
+                    , div
+                        [ css [ margin auto, color (rgb 196 196 196) ] ]
+                        [ text "按空白鍵檢查答案。按問號鍵顯示答案。Press space to check your answer. Press ? to show the answer." ]
                     , div [ css [ position absolute, top (rem 1), right (rem 1) ] ]
                         [ settingsBtn ]
                     ]
 
             else
-                div [ css [ width (vw 100.0), minHeight (vh 100.0), display inlineFlex, flexDirection column ] ]
+                div [ css [ width (vw 100.0), minHeight (vh 100.0), displayFlex, flexDirection column ] ]
                     [ div [ css [ position absolute, top (rem 1), right (rem 1) ] ]
                         [ closeSettingsBtn ]
-                    , div [ css [ marginTop (rem 5), minHeight (vh 10.0), display inlineFlex, flexDirection column, fontSize (rem 1.25), color (rgb 196 196 196) ] ]
+                    , div [ css [ marginTop (rem 5), minHeight (vh 10.0), displayFlex, flexDirection column, fontSize (rem 1.25), color (rgb 196 196 196) ] ]
                         [ div
                             [ css [ margin4 (px 2) auto (px 2) auto ] ]
                             [ text "在鍵盤上輸入與答案相應的英文字母。Input the corresponding English letters on your keyboard." ]
@@ -112,9 +125,9 @@ view model =
                             [ css [ margin4 (px 2) auto (px 2) auto ] ]
                             [ text "按 ` 鍵顯示/隠藏鍵盤。Press ` to show/hide the keyboard." ]
                         ]
-                    , div [ css [ marginTop (rem 5), minHeight (vh 10.0), display inlineFlex, flexDirection column, fontSize (rem 1.25) ] ]
+                    , div [ css [ marginTop (rem 5), minHeight (vh 10.0), displayFlex, flexDirection column, fontSize (rem 1.25) ] ]
                         [ div
-                            [ css [ margin4 (px 2) auto (px 2) auto, display inlineFlex, flexDirection row ] ]
+                            [ css [ margin4 (px 2) auto (px 2) auto, displayFlex, flexDirection row ] ]
                             [ div
                                 [ css [ margin4 (px 2) (rem 4) (px 2) auto ] ]
                                 [ text "Number of Questions: " ]
@@ -128,7 +141,7 @@ view model =
                         ]
                     ]
     in
-    { title = "倉頡練習"
+    { title = "繁體中文倉頡練習"
     , body = [ toUnstyled content ]
     }
 
@@ -145,8 +158,8 @@ outputBox model =
 virtualKeyboard : Model -> Html Msg
 virtualKeyboard model =
     if model.showVirtualKeyboard then
-        div [ css [ display inlineFlex, flexDirection column, alignItems center, width (pct 100) ] ]
-            [ div [ css [display inlineFlex, flexDirection row, width (pct 100)] ]
+        div [ css [ displayFlex, flexDirection column, alignItems center, width (pct 100) ] ]
+            [ div [ css [ displayFlex, flexDirection row, width (pct 100) ] ]
                 [ virtualKeyboardBtn '手'
                 , virtualKeyboardBtn '田'
                 , virtualKeyboardBtn '水'
@@ -159,7 +172,7 @@ virtualKeyboard model =
                 , virtualKeyboardBtn '心'
                 , virtualBackspace
                 ]
-            , div [ css [display inlineFlex, flexDirection row, width (pct 82)] ]
+            , div [ css [ displayFlex, flexDirection row, width (pct 82) ] ]
                 [ virtualKeyboardBtn '日'
                 , virtualKeyboardBtn '尸'
                 , virtualKeyboardBtn '木'
@@ -170,7 +183,7 @@ virtualKeyboard model =
                 , virtualKeyboardBtn '大'
                 , virtualKeyboardBtn '中'
                 ]
-            , div [ css [display inlineFlex, flexDirection row, width (pct 72)] ]
+            , div [ css [ displayFlex, flexDirection row, width (pct 72) ] ]
                 [ virtualKeyboardBtn '重'
                 , virtualKeyboardBtn '難'
                 , virtualKeyboardBtn '金'
@@ -192,7 +205,7 @@ buttonStyle =
     Css.batch
         [ margin (rem 0.2)
         , height (rem 4)
-        , display inlineFlex
+        , displayFlex
         , flexGrow (num 1)
         , fontSize (rem 1)
         , touchAction manipulation
@@ -207,7 +220,7 @@ virtualKeyboardBtn char =
         [ onClick (PressedLetter char)
         , css [ buttonStyle ]
         ]
-        [ span [ css [width (pct 100), margin auto] ] [text <| String.fromChar char ] ]
+        [ span [ css [ width (pct 100), margin auto ] ] [ text <| String.fromChar char ] ]
 
 
 virtualBackspace : Html Msg
@@ -216,7 +229,7 @@ virtualBackspace =
         [ onClick (Control "Backspace")
         , css [ buttonStyle ]
         ]
-        [ span [ css [width (pct 100), margin auto] ] [text "←" ] ]
+        [ span [ css [ width (pct 100), margin auto ] ] [ text "←" ] ]
 
 
 virtualSpace : Html Msg
@@ -224,8 +237,9 @@ virtualSpace =
     button
         [ onClick (PressedLetter ' ')
         , css [ buttonStyle, width (pct 100) ]
+        , class "plausible-event-name=Answer"
         ]
-        [ span [ css [width (pct 100), margin auto] ] [text "Space" ] ]
+        [ span [ css [ width (pct 100), margin auto ] ] [ text "Space" ] ]
 
 
 virtualQuestionMark : Html Msg
@@ -234,22 +248,23 @@ virtualQuestionMark =
         [ on "pointerdown" <| Decode.succeed <| PressedLetter '?'
         , on "pointerup" <| Decode.succeed <| LiftedLetter '?'
         , css [ buttonStyle ]
+        , class "plausible-event-name=Hint"
         ]
-        [ span [ css [width (pct 100), margin auto] ] [text "？" ] ]
+        [ span [ css [ width (pct 100), margin auto ] ] [ text "？" ] ]
 
 
 settingsBtn : Html Msg
 settingsBtn =
     button
         [ onClick (ToggleSettings True), css [ buttonStyle ] ]
-        [ span [ css [width (rem 4), margin auto] ] [text "⚙️" ] ]
+        [ span [ css [ width (rem 4), margin auto ] ] [ text "⚙️" ] ]
 
 
 closeSettingsBtn : Html Msg
 closeSettingsBtn =
     button
         [ onClick (ToggleSettings False), css [ buttonStyle ] ]
-        [ span [ css [width (rem 4), margin auto] ] [text "✖" ] ]
+        [ span [ css [ width (rem 4), margin auto ] ] [ text "✖" ] ]
 
 
 
@@ -337,16 +352,23 @@ checkAnswer : Model -> ( Model, Cmd Msg )
 checkAnswer model =
     if model.content == model.question.answer then
         ( { model | content = "" }
-        , generateNumber model
+        , Cmd.batch
+            [ generateNumber model
+            , sendPlausibleEvent "AnswerCorrect"
+            ]
         )
 
     else
-        ( model, Cmd.none )
+        ( model, sendPlausibleEvent "AnswerWrong" )
 
 
 showAnswer : Model -> ( Model, Cmd Msg )
 showAnswer model =
-    ( { model | showAnswer = True }, Cmd.none )
+    if model.showAnswer == True then
+        ( model, Cmd.none )
+
+    else
+        ( { model | showAnswer = True }, sendPlausibleEvent "ShowAnswer" )
 
 
 hideAnswer : Model -> ( Model, Cmd Msg )
