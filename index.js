@@ -5930,14 +5930,23 @@ var $author$project$Main$subscriptions = function (_v0) {
 };
 var $elm$core$String$append = _String_append;
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
-var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
+var $elm$json$Json$Encode$string = _Json_wrap;
+var $author$project$Main$sendPlausibleEvent = _Platform_outgoingPort('sendPlausibleEvent', $elm$json$Json$Encode$string);
 var $author$project$Main$checkAnswer = function (model) {
 	return _Utils_eq(model.content, model.question.answer) ? _Utils_Tuple2(
 		_Utils_update(
 			model,
 			{content: ''}),
-		$author$project$Main$generateNumber(model)) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+		$elm$core$Platform$Cmd$batch(
+			_List_fromArray(
+				[
+					$author$project$Main$generateNumber(model),
+					$author$project$Main$sendPlausibleEvent('AnswerCorrect')
+				]))) : _Utils_Tuple2(
+		model,
+		$author$project$Main$sendPlausibleEvent('AnswerWrong'));
 };
+var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $author$project$Main$numMaxQuestionUpdate = F2(
 	function (model, num) {
 		if ((_Utils_cmp(num, $author$project$Questions$maxQuestions + 1) > 0) || (num < 1)) {
@@ -15054,11 +15063,11 @@ var $author$project$Main$openSettings = function (model) {
 		$elm$core$Platform$Cmd$none);
 };
 var $author$project$Main$showAnswer = function (model) {
-	return _Utils_Tuple2(
+	return model.showAnswer ? _Utils_Tuple2(model, $elm$core$Platform$Cmd$none) : _Utils_Tuple2(
 		_Utils_update(
 			model,
 			{showAnswer: true}),
-		$elm$core$Platform$Cmd$none);
+		$author$project$Main$sendPlausibleEvent('ShowAnswer'));
 };
 var $author$project$Main$toggleKeyboard = function (model) {
 	return _Utils_Tuple2(
@@ -15178,11 +15187,10 @@ var $rtfeldman$elm_css$Css$prop1 = F2(
 		return A2($rtfeldman$elm_css$Css$property, key, arg.value);
 	});
 var $rtfeldman$elm_css$Css$borderRadius = $rtfeldman$elm_css$Css$prop1('border-radius');
-var $rtfeldman$elm_css$Css$display = $rtfeldman$elm_css$Css$prop1('display');
+var $rtfeldman$elm_css$Css$displayFlex = A2($rtfeldman$elm_css$Css$property, 'display', 'flex');
 var $rtfeldman$elm_css$Css$flexGrow = $rtfeldman$elm_css$Css$prop1('flex-grow');
 var $rtfeldman$elm_css$Css$fontSize = $rtfeldman$elm_css$Css$prop1('font-size');
 var $rtfeldman$elm_css$Css$height = $rtfeldman$elm_css$Css$prop1('height');
-var $rtfeldman$elm_css$Css$inlineFlex = {display: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'inline-flex'};
 var $rtfeldman$elm_css$Css$manipulation = {touchAction: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'manipulation'};
 var $rtfeldman$elm_css$Css$margin = $rtfeldman$elm_css$Css$prop1('margin');
 var $rtfeldman$elm_css$Css$Media$feature = F2(
@@ -15260,7 +15268,7 @@ var $author$project$Main$buttonStyle = $rtfeldman$elm_css$Css$batch(
 			$rtfeldman$elm_css$Css$rem(0.2)),
 			$rtfeldman$elm_css$Css$height(
 			$rtfeldman$elm_css$Css$rem(4)),
-			$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$inlineFlex),
+			$rtfeldman$elm_css$Css$displayFlex,
 			$rtfeldman$elm_css$Css$flexGrow(
 			$rtfeldman$elm_css$Css$num(1)),
 			$rtfeldman$elm_css$Css$fontSize(
@@ -17112,7 +17120,6 @@ var $rtfeldman$elm_css$VirtualDom$Styled$property = F2(
 			false,
 			'');
 	});
-var $elm$json$Json$Encode$string = _Json_wrap;
 var $rtfeldman$elm_css$Html$Styled$Attributes$stringProperty = F2(
 	function (key, string) {
 		return A2(
@@ -17887,6 +17894,7 @@ var $author$project$Main$virtualKeyboardBtn = function (_char) {
 					]))
 			]));
 };
+var $rtfeldman$elm_css$Html$Styled$Attributes$class = $rtfeldman$elm_css$Html$Styled$Attributes$stringProperty('className');
 var $author$project$Main$virtualQuestionMark = A2(
 	$rtfeldman$elm_css$Html$Styled$button,
 	_List_fromArray(
@@ -17905,7 +17913,8 @@ var $author$project$Main$virtualQuestionMark = A2(
 					_Utils_chr('?')))),
 			$rtfeldman$elm_css$Html$Styled$Attributes$css(
 			_List_fromArray(
-				[$author$project$Main$buttonStyle]))
+				[$author$project$Main$buttonStyle])),
+			$rtfeldman$elm_css$Html$Styled$Attributes$class('plausible-event-name=Hint')
 		]),
 	_List_fromArray(
 		[
@@ -17939,7 +17948,8 @@ var $author$project$Main$virtualSpace = A2(
 					$author$project$Main$buttonStyle,
 					$rtfeldman$elm_css$Css$width(
 					$rtfeldman$elm_css$Css$pct(100))
-				]))
+				])),
+			$rtfeldman$elm_css$Html$Styled$Attributes$class('plausible-event-name=Answer')
 		]),
 	_List_fromArray(
 		[
@@ -17968,7 +17978,7 @@ var $author$project$Main$virtualKeyboard = function (model) {
 				$rtfeldman$elm_css$Html$Styled$Attributes$css(
 				_List_fromArray(
 					[
-						$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$inlineFlex),
+						$rtfeldman$elm_css$Css$displayFlex,
 						$rtfeldman$elm_css$Css$flexDirection($rtfeldman$elm_css$Css$column),
 						$rtfeldman$elm_css$Css$alignItems($rtfeldman$elm_css$Css$center),
 						$rtfeldman$elm_css$Css$width(
@@ -17984,7 +17994,7 @@ var $author$project$Main$virtualKeyboard = function (model) {
 						$rtfeldman$elm_css$Html$Styled$Attributes$css(
 						_List_fromArray(
 							[
-								$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$inlineFlex),
+								$rtfeldman$elm_css$Css$displayFlex,
 								$rtfeldman$elm_css$Css$flexDirection($rtfeldman$elm_css$Css$row),
 								$rtfeldman$elm_css$Css$width(
 								$rtfeldman$elm_css$Css$pct(100))
@@ -18021,7 +18031,7 @@ var $author$project$Main$virtualKeyboard = function (model) {
 						$rtfeldman$elm_css$Html$Styled$Attributes$css(
 						_List_fromArray(
 							[
-								$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$inlineFlex),
+								$rtfeldman$elm_css$Css$displayFlex,
 								$rtfeldman$elm_css$Css$flexDirection($rtfeldman$elm_css$Css$row),
 								$rtfeldman$elm_css$Css$width(
 								$rtfeldman$elm_css$Css$pct(82))
@@ -18055,7 +18065,7 @@ var $author$project$Main$virtualKeyboard = function (model) {
 						$rtfeldman$elm_css$Html$Styled$Attributes$css(
 						_List_fromArray(
 							[
-								$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$inlineFlex),
+								$rtfeldman$elm_css$Css$displayFlex,
 								$rtfeldman$elm_css$Css$flexDirection($rtfeldman$elm_css$Css$row),
 								$rtfeldman$elm_css$Css$width(
 								$rtfeldman$elm_css$Css$pct(72))
@@ -18108,7 +18118,7 @@ var $author$project$Main$view = function (model) {
 						$rtfeldman$elm_css$Css$vw(100.0)),
 						$rtfeldman$elm_css$Css$minHeight(
 						$rtfeldman$elm_css$Css$vh(100.0)),
-						$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$inlineFlex),
+						$rtfeldman$elm_css$Css$displayFlex,
 						$rtfeldman$elm_css$Css$flexDirection($rtfeldman$elm_css$Css$column)
 					]))
 			]),
@@ -18123,7 +18133,7 @@ var $author$project$Main$view = function (model) {
 							[
 								$rtfeldman$elm_css$Css$minHeight(
 								$rtfeldman$elm_css$Css$vh(20.0)),
-								$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$inlineFlex)
+								$rtfeldman$elm_css$Css$displayFlex
 							]))
 					]),
 				_List_fromArray(
@@ -18159,7 +18169,7 @@ var $author$project$Main$view = function (model) {
 							[
 								$rtfeldman$elm_css$Css$minHeight(
 								$rtfeldman$elm_css$Css$vh(10.0)),
-								$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$inlineFlex)
+								$rtfeldman$elm_css$Css$displayFlex
 							]))
 					]),
 				_List_fromArray(
@@ -18195,7 +18205,7 @@ var $author$project$Main$view = function (model) {
 							[
 								$rtfeldman$elm_css$Css$minHeight(
 								$rtfeldman$elm_css$Css$vh(60.0)),
-								$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$inlineFlex)
+								$rtfeldman$elm_css$Css$displayFlex
 							]))
 					]),
 				_List_fromArray(
@@ -18247,6 +18257,22 @@ var $author$project$Main$view = function (model) {
 						$rtfeldman$elm_css$Html$Styled$Attributes$css(
 						_List_fromArray(
 							[
+								$rtfeldman$elm_css$Css$margin($rtfeldman$elm_css$Css$auto),
+								$rtfeldman$elm_css$Css$color(
+								A3($rtfeldman$elm_css$Css$rgb, 196, 196, 196))
+							]))
+					]),
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$text('按空白鍵檢查答案。按問號鍵顯示答案。Press space to check your answer. Press ? to show the answer.')
+					])),
+				A2(
+				$rtfeldman$elm_css$Html$Styled$div,
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$Attributes$css(
+						_List_fromArray(
+							[
 								$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$absolute),
 								$rtfeldman$elm_css$Css$top(
 								$rtfeldman$elm_css$Css$rem(1)),
@@ -18267,7 +18293,7 @@ var $author$project$Main$view = function (model) {
 						$rtfeldman$elm_css$Css$vw(100.0)),
 						$rtfeldman$elm_css$Css$minHeight(
 						$rtfeldman$elm_css$Css$vh(100.0)),
-						$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$inlineFlex),
+						$rtfeldman$elm_css$Css$displayFlex,
 						$rtfeldman$elm_css$Css$flexDirection($rtfeldman$elm_css$Css$column)
 					]))
 			]),
@@ -18300,7 +18326,7 @@ var $author$project$Main$view = function (model) {
 								$rtfeldman$elm_css$Css$rem(5)),
 								$rtfeldman$elm_css$Css$minHeight(
 								$rtfeldman$elm_css$Css$vh(10.0)),
-								$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$inlineFlex),
+								$rtfeldman$elm_css$Css$displayFlex,
 								$rtfeldman$elm_css$Css$flexDirection($rtfeldman$elm_css$Css$column),
 								$rtfeldman$elm_css$Css$fontSize(
 								$rtfeldman$elm_css$Css$rem(1.25)),
@@ -18417,7 +18443,7 @@ var $author$project$Main$view = function (model) {
 								$rtfeldman$elm_css$Css$rem(5)),
 								$rtfeldman$elm_css$Css$minHeight(
 								$rtfeldman$elm_css$Css$vh(10.0)),
-								$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$inlineFlex),
+								$rtfeldman$elm_css$Css$displayFlex,
 								$rtfeldman$elm_css$Css$flexDirection($rtfeldman$elm_css$Css$column),
 								$rtfeldman$elm_css$Css$fontSize(
 								$rtfeldman$elm_css$Css$rem(1.25))
@@ -18438,7 +18464,7 @@ var $author$project$Main$view = function (model) {
 										$rtfeldman$elm_css$Css$auto,
 										$rtfeldman$elm_css$Css$px(2),
 										$rtfeldman$elm_css$Css$auto),
-										$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$inlineFlex),
+										$rtfeldman$elm_css$Css$displayFlex,
 										$rtfeldman$elm_css$Css$flexDirection($rtfeldman$elm_css$Css$row)
 									]))
 							]),
@@ -18521,7 +18547,7 @@ var $author$project$Main$view = function (model) {
 			[
 				$rtfeldman$elm_css$Html$Styled$toUnstyled(content)
 			]),
-		title: '倉頡練習'
+		title: '繁體中文倉頡練習'
 	};
 };
 var $author$project$Main$main = $elm$browser$Browser$document(
