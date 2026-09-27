@@ -8351,7 +8351,7 @@ var $author$project$Questions$questions = $elm$core$Dict$fromList(
 			{answer: '弓中月一', englishKey: 'NLBM', id: 774, target: '阻'}),
 			_Utils_Tuple2(
 			775,
-			{answer: '難卜口月山', englishKey: 'XYRBU', id: 775, target: '毫'}),
+			{answer: '卜口月山', englishKey: 'YRBU', id: 775, target: '毫'}),
 			_Utils_Tuple2(
 			776,
 			{answer: '弓山', englishKey: 'NU', id: 776, target: '乙'}),
@@ -8915,7 +8915,7 @@ var $author$project$Questions$questions = $elm$core$Dict$fromList(
 			{answer: '一月木戈', englishKey: 'MBDI', id: 962, target: '耐'}),
 			_Utils_Tuple2(
 			963,
-			{answer: '難卜人中弓', englishKey: 'XYOLN', id: 963, target: '劇'}),
+			{answer: '卜人中弓', englishKey: 'YOLN', id: 963, target: '劇'}),
 			_Utils_Tuple2(
 			964,
 			{answer: '一土戈', englishKey: 'MGI', id: 964, target: '玉'}),
@@ -11690,7 +11690,7 @@ var $author$project$Questions$questions = $elm$core$Dict$fromList(
 			{answer: '竹中弓人', englishKey: 'HLNO', id: 1887, target: '欣'}),
 			_Utils_Tuple2(
 			1888,
-			{answer: '難卜口月弓', englishKey: 'XYRBN', id: 1888, target: '亭'}),
+			{answer: '卜口月弓', englishKey: 'YRBN', id: 1888, target: '亭'}),
 			_Utils_Tuple2(
 			1889,
 			{answer: '一田心日', englishKey: 'MWPA', id: 1889, target: '酯'}),
@@ -14252,7 +14252,7 @@ var $author$project$Questions$questions = $elm$core$Dict$fromList(
 			{answer: '人人田卜', englishKey: 'OOWY', id: 2741, target: '侮'}),
 			_Utils_Tuple2(
 			2742,
-			{answer: '難卜金大', englishKey: 'XYCK', id: 2742, target: '奕'}),
+			{answer: '卜金大', englishKey: 'YCK', id: 2742, target: '奕'}),
 			_Utils_Tuple2(
 			2743,
 			{answer: '木中月山', englishKey: 'DLBU', id: 2743, target: '枕'}),
