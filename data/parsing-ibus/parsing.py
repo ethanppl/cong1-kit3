@@ -6,17 +6,23 @@ class CodesDict(TypedDict):
     wordsToCode: dict[str, str]
 
 
+class ParsingException(Exception):
+    pass
+
+
 def getCommonWords() -> list[str]:
     commonWords: list[str] = []
-    commonWordsFile = open("../common_words/common_words.txt", "r", encoding="utf-8")
-    Lines = commonWordsFile.readlines()
+    with open(
+        "../common_words/common_words.txt", "r", encoding="utf-8"
+    ) as commonWordsFile:
+        lines = commonWordsFile.readlines()
 
-    for line in Lines:
-        splittedLine = line.strip().split("\t")
-        if len(splittedLine) > 2:
-            commonWords.append(splittedLine[2])
+        for line in lines:
+            splittedLine = line.strip().split("\t")
+            if len(splittedLine) > 2:
+                commonWords.append(splittedLine[2])
 
-    return commonWords
+        return commonWords
 
 
 def getCodes(filePath: str) -> CodesDict:
@@ -25,39 +31,39 @@ def getCodes(filePath: str) -> CodesDict:
         "wordsToCode": {},
     }
 
-    codesFile = open(filePath, "r", encoding="utf-8")
-    lines = codesFile.readlines()
+    with open(filePath, "r", encoding="utf-8") as codesFile:
+        lines = codesFile.readlines()
 
-    count = 0
+        count = 0
 
-    for line in lines:
-        splittedLine = line.strip().split("\t")
+        for line in lines:
+            splittedLine = line.strip().split("\t")
 
-        if len(splittedLine) < 2:
-            continue
+            if len(splittedLine) < 2:
+                continue
 
-        # For letters to words mapping, only the first 25 lines are letters
-        if count < 25:
-            codes["codesToWord"][splittedLine[0]] = splittedLine[1]
+            # For letters to words mapping, only the first 25 lines are letters
+            if count < 25:
+                codes["codesToWord"][splittedLine[0]] = splittedLine[1]
 
-        # For the specific case where 'x' is mapped to '難'
-        if splittedLine[0] == "x" and splittedLine[1] == "難":
-            continue
+            # For the specific case where 'x' is mapped to '難'
+            if splittedLine[0] == "x" and splittedLine[1] == "難":
+                continue
 
-        current_code = splittedLine[0]
-        current_word = splittedLine[1]
-        existing_code = codes["wordsToCode"].get(current_word)
+            current_code = splittedLine[0]
+            current_word = splittedLine[1]
+            existing_code = codes["wordsToCode"].get(current_word)
 
-        is_current_code_shorter = existing_code and current_code in existing_code
-        # Try not to alter the existing mapping if the word is already mapped
-        # There are some words with multiple codes, so we try not to override
-        # the existing code with a less common one. Especially for the words
-        # that have an extra code starting with 'x'. However, if the new code is
-        # a substring of the old code, use the new code because that is better.
-        if existing_code == None or is_current_code_shorter:
-            codes["wordsToCode"][current_word] = current_code
+            is_current_code_shorter = existing_code and current_code in existing_code
+            # Try not to alter the existing mapping if the word is already mapped
+            # There are some words with multiple codes, so we try not to override
+            # the existing code with a less common one. Especially for the words
+            # that have an extra code starting with 'x'. However, if the new code is
+            # a substring of the old code, use the new code because that is better.
+            if existing_code == None or is_current_code_shorter:
+                codes["wordsToCode"][current_word] = current_code
 
-        count += 1
+            count += 1
 
     return codes
 
@@ -68,50 +74,56 @@ def getAnswerFromEnglishKey(codes: CodesDict, key: str):
         if k in codes["codesToWord"]:
             answer += codes["codesToWord"][k]
         else:
-            raise Exception("Key not found: " + k)
+            raise ParsingException("Key not found: " + k)
 
     return answer
 
 
-commonWords = getCommonWords()
-codes = getCodes("../ibus-table/cangjie5-clean.txt")
+def outputCodes(fileName: str, commonWords: list[str], codes: CodesDict):
+    output = "["
 
-# print(getAnswerFromEnglishKey(codes, 'kejf'))
-# print(codes['codesToWord'])
+    for index, word in enumerate(commonWords):
+        if word in codes["wordsToCode"]:
+            englishKeyLower = codes["wordsToCode"][word]
+            englishKey = englishKeyLower.upper()
+            answer = getAnswerFromEnglishKey(codes, englishKeyLower)
 
-output = "["
-index = 0
+            if index > 0:
+                output += ","
 
-for word in commonWords:
-    if word in codes["wordsToCode"]:
-        englishKeyLower = codes["wordsToCode"][word]
-        englishKey = englishKeyLower.upper()
-        answer = getAnswerFromEnglishKey(codes, englishKeyLower)
+            output += (
+                " ( "
+                + str(index)
+                + ", { id = "
+                + str(index)
+                + ', target = "'
+                + word
+                + '", answer = "'
+                + answer
+                + '", englishKey = "'
+                + englishKey
+                + '" } )\n'
+            )
 
-        if index > 0:
-            output += ","
+            # print(index, word, answer, englishKey)
+        else:
+            raise ParsingException(word + "\t" + "not found")
 
-        output += (
-            " ( "
-            + str(index)
-            + ", { id = "
-            + str(index)
-            + ', target = "'
-            + word
-            + '", answer = "'
-            + answer
-            + '", englishKey = "'
-            + englishKey
-            + '" } )\n'
-        )
+    output += "]\n"
 
-        # print(index, word, answer, englishKey)
-    else:
-        raise Exception(word + "\t" + "not found")
+    with open(fileName, "w") as outputFile:
+        _ = outputFile.write(output)
 
-    index += 1
 
-output += "]"
+def main():
+    commonWords = getCommonWords()
+    codes = getCodes("../ibus-table/cangjie5-clean.txt")
 
-outputFile = open("dataset-common.txt", "w")
-outputFile.write(output)
+    # print(getAnswerFromEnglishKey(codes, 'kejf'))
+    # print(codes['codesToWord'])
+
+    outputCodes("dataset-common.txt", commonWords, codes)
+
+
+if __name__ == "__main__":
+    main()
